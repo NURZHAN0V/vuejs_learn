@@ -140,6 +140,9 @@ npm run dev</code></pre>
               <li><strong>CDN:</strong> быстро проверить идею в одном файле, но неудобно развивать большой проект.</li>
               <li><strong>Vite:</strong> чуть дольше старт, зато удобная структура, команды и нормальная работа для курса и реальных задач.</li>
             </ul>
+            <p class="mt-2 text-sm text-slate-700">
+              Что можно быстро проверить через CDN: счетчик, показ/скрытие блока, простой список задач или мини-форму с мгновенным результатом.
+            </p>
           </div>
         </div>
         <div class="rounded-xl bg-slate-50 p-4 ring-1 ring-slate-200">
@@ -187,27 +190,43 @@ npm run dev</code></pre>
         </article>
 
         <article class="rounded-xl bg-blue-50 p-4 ring-1 ring-blue-200">
-          <h3 class="mb-2 text-lg font-medium">Как создать Vue-приложение с нуля (Windows PowerShell)</h3>
-          <p class="mb-2">Скопируй и выполни команды по порядку:</p>
-          <pre class="overflow-x-auto rounded-lg bg-slate-900 p-3 text-sm text-slate-100"><code class="language-bash"># 1) Перейди в папку, где будет проект
-cd C:\Git
-
-# 2) Создай новый Vue-проект
-npm create vue@latest my-first-vue-app
-
-# 3) Перейди в проект
-cd .\my-first-vue-app
-
-# 4) Установи зависимости (npm install или npm i)
+          <h3 class="mb-2 text-lg font-medium">Полный сценарий установки Vue (как в реальном терминале)</h3>
+          <ol class="list-decimal space-y-2 pl-6 text-sm text-slate-700">
+            <li>
+              <strong>Проверь Node.js и npm:</strong>
+              <pre class="mt-2 overflow-x-auto rounded-lg bg-slate-900 p-3 text-xs text-slate-100"><code class="language-bash">node -v
+npm -v</code></pre>
+              Если команды возвращают версии, можно продолжать.
+            </li>
+            <li>
+              <strong>Запусти создание проекта:</strong>
+              <pre class="mt-2 overflow-x-auto rounded-lg bg-slate-900 p-3 text-xs text-slate-100"><code class="language-bash">npm create vue@latest my-first-vue-app</code></pre>
+            </li>
+            <li>
+              <strong>На вопрос про установку create-vue ответь:</strong> <code>y</code>.
+            </li>
+            <li>
+              <strong>В мастере выбери параметры:</strong>
+              <ul class="mt-1 list-disc space-y-1 pl-6">
+                <li><code>Use TypeScript?</code> — <strong>No</strong> (для базового старта курса).</li>
+                <li><code>Select features to include...</code> — минимум можно оставить без галочек; для полного учебного старта обычно берут <strong>Router</strong>, <strong>Pinia</strong>, <strong>Linter</strong>.</li>
+                <li><code>Select experimental features...</code> — на старте лучше <strong>ничего не включать</strong>.</li>
+                <li><code>Skip all example code and start with a blank Vue project?</code> — <strong>No</strong> (чтобы увидеть рабочий пример сразу).</li>
+              </ul>
+            </li>
+            <li>
+              <strong>После сообщения <code>Done. Now run:</code> выполни:</strong>
+              <pre class="mt-2 overflow-x-auto rounded-lg bg-slate-900 p-3 text-xs text-slate-100"><code class="language-bash">cd my-first-vue-app
 npm install
-
-# 5) Запусти проект
 npm run dev</code></pre>
-          <p class="mt-2 text-sm text-slate-700">
-            После запуска в терминале появится локальный адрес (обычно <code>http://localhost:5173</code>). Открой его в браузере.
-          </p>
-          <p class="mt-2 text-sm text-slate-700">
-            Примечание: <code>npm install</code> и <code>npm i</code> — это одно и то же.
+            </li>
+            <li>
+              <strong>Открой адрес из терминала</strong> (обычно <code>http://localhost:5173</code>) и проверь, что стартовая страница Vue открылась.
+            </li>
+          </ol>
+          <p class="mt-2 text-sm text-slate-700">Примечание: <code>npm install</code> и <code>npm i</code> — это одно и то же.</p>
+          <p class="mt-3 text-sm text-slate-700">
+            Важно: это и есть полноценная установка Vue для проекта. Vue ставится в папку проекта, а не "один раз на весь компьютер".
           </p>
         </article>
 
@@ -222,23 +241,7 @@ npm run dev</code></pre>
         </article>
 
         <article class="rounded-xl bg-slate-50 p-4 ring-1 ring-slate-200">
-          <h3 class="mb-2 text-lg font-medium">Шаг 1. Создай проект</h3>
-          <p class="mb-2">Зачем нужен шаг: создаем "скелет" приложения с готовой структурой файлов.</p>
-          <pre class="overflow-x-auto rounded-lg bg-slate-900 p-3 text-sm text-slate-100"><code class="language-bash">npm create vue@latest my-first-vue-app</code></pre>
-          <p class="mt-2 text-sm text-slate-700">Что изменится: появится папка проекта со стартовыми файлами Vue.</p>
-        </article>
-
-        <article class="rounded-xl bg-slate-50 p-4 ring-1 ring-slate-200">
-          <h3 class="mb-2 text-lg font-medium">Шаг 2. Установи зависимости и запусти проект</h3>
-          <p class="mb-2">Зачем нужен шаг: без зависимостей и dev-сервера приложение не откроется в браузере.</p>
-          <pre class="overflow-x-auto rounded-lg bg-slate-900 p-3 text-sm text-slate-100"><code class="language-bash">cd my-first-vue-app
-npm install
-npm run dev</code></pre>
-          <p class="mt-2 text-sm text-slate-700">Связь с шагом 1: теперь "скелет" превращается в рабочее приложение.</p>
-        </article>
-
-        <article class="rounded-xl bg-slate-50 p-4 ring-1 ring-slate-200">
-          <h3 class="mb-2 text-lg font-medium">Шаг 3. Найди точку входа и главный компонент</h3>
+          <h3 class="mb-2 text-lg font-medium">Шаг 2. Найди точку входа и главный компонент</h3>
           <p class="mb-2">Зачем нужен шаг: важно понять, откуда приложение стартует.</p>
           <p class="mb-2 text-sm text-slate-700">Фрагмент 1 — <code>src/main.js</code>:</p>
           <pre class="overflow-x-auto rounded-lg bg-slate-900 p-3 text-sm text-slate-100"><code class="language-javascript">import { createApp } from 'vue'
@@ -251,7 +254,7 @@ createApp(App).mount('#app')</code></pre>
         </article>
 
         <article class="rounded-xl bg-slate-50 p-4 ring-1 ring-slate-200">
-          <h3 class="mb-2 text-lg font-medium">Шаг 4. Измени стартовый экран</h3>
+          <h3 class="mb-2 text-lg font-medium">Шаг 3. Измени стартовый экран</h3>
           <p class="mb-2">Зачем нужен шаг: проверяем, что проект работает и вы контролируете вывод на странице.</p>
           <p class="mb-2 text-sm text-slate-700">Фрагмент 2 — минимальный <code>src/App.vue</code>:</p>
           <pre class="overflow-x-auto rounded-lg bg-slate-900 p-3 text-sm text-slate-100"><code class="language-html">&lt;template&gt;
@@ -266,7 +269,7 @@ createApp(App).mount('#app')</code></pre>
         </article>
 
         <article class="rounded-xl bg-slate-50 p-4 ring-1 ring-slate-200">
-          <h3 class="mb-2 text-lg font-medium">Шаг 5. Подключи Vue DevTools</h3>
+          <h3 class="mb-2 text-lg font-medium">Шаг 4. Подключи Vue DevTools</h3>
           <p>
             Зачем нужен шаг: видеть дерево компонентов и состояние приложения в реальном времени.
             После установки расширения открой вкладку Vue в инструментах разработчика браузера.
@@ -279,7 +282,7 @@ createApp(App).mount('#app')</code></pre>
       <h2 class="mb-3 text-xl font-semibold">Практическое задание</h2>
       <p class="mb-2">Создать «Привет, Vue».</p>
       <ol class="list-decimal space-y-1 pl-6">
-        <li>Создай и запусти проект командами из блока «Как создать Vue-приложение с нуля».</li>
+        <li>Создай приложение Vue по инструкции, указанной ранее.</li>
         <li>Открой <code>src/App.vue</code>.</li>
         <li>Сделай заголовок «Привет, Vue!» и добавь короткое описание о себе.</li>
         <li>Добавь текущую дату обычным текстом.</li>

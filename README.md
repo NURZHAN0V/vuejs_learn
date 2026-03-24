@@ -1,5 +1,36 @@
 # Современный учебник Vue.js 3
 
+## Быстрые ссылки на разделы
+
+- [Раздел 0. Как учиться по учебнику](pages/01-how-to-learn.html)
+- [Раздел 1. Введение в Vue.js 3 и запуск первого проекта](pages/02-vue-intro-and-setup.html)
+- [Раздел 2. База шаблонов: интерполяция и директивы](pages/03-template-basics.html)
+- [Раздел 3. События и пользовательские действия](pages/04-events-and-handlers.html)
+- [Раздел 4. Реактивность Vue 3: ref, reactive, computed](pages/05-reactivity-ref-reactive-computed.html)
+- [Раздел 5. Наблюдатели и побочные эффекты](pages/06-watch-and-effects.html)
+- [Раздел 6. Жизненный цикл компонента](pages/07-lifecycle-hooks.html)
+- [Раздел 7. Формы и двусторонняя связь (v-model)](pages/08-forms-and-v-model.html)
+- [Раздел 8. Компоненты: создание, регистрация, композиция](pages/09-components-basics.html)
+- [Раздел 9. Props и события компонентов (emits)](pages/10-props-and-emits.html)
+- [Раздел 10. Слоты: гибкие и переиспользуемые компоненты](pages/11-slots.html)
+- [Раздел 11. Composition API и composables](pages/12-composition-api-and-composables.html)
+- [Раздел 12. Предоставление зависимостей: provide / inject](pages/13-provide-inject.html)
+- [Раздел 13. Teleport, Suspense, KeepAlive](pages/14-teleport-suspense-keepalive.html)
+- [Раздел 14. Анимации и переходы](pages/15-transitions-and-animations.html)
+- [Раздел 15. Маршрутизация с Vue Router](pages/16-vue-router-basics.html)
+- [Раздел 16. Управление состоянием с Pinia (база)](pages/18-pinia-basics.html)
+- [Раздел 16. Управление состоянием с Pinia (углубление)](pages/19-pinia-advanced.html)
+- [Раздел 17. Работа с API и асинхронностью](pages/20-api-and-async.html)
+- [Раздел 18. Глубокая реактивность и продвинутые API](pages/21-advanced-reactivity.html)
+- [Раздел 19. script setup и современные макросы](pages/22-script-setup-macros.html)
+- [Раздел 20. TypeScript в Vue 3](pages/23-typescript-in-vue.html)
+- [Раздел 21. Производительность и оптимизация](pages/24-performance-optimization.html)
+- [Раздел 22. Тестирование Vue-приложений](pages/25-testing-vue-apps.html)
+- [Раздел 23. Безопасность и надежность интерфейса](pages/26-security-and-reliability.html)
+- [Раздел 24. SSR, SSG и Nuxt](pages/27-ssr-ssg-and-nuxt.html)
+- [Раздел 25. Архитектура реального проекта](pages/28-project-architecture.html)
+- [Раздел 26. Options API и миграция с Vue 2](pages/29-options-api-and-migration.html)
+
 ## Шаг 1. Полный план учебника
 
 ### Раздел 1. Введение в Vue.js 3 и запуск первого проекта
