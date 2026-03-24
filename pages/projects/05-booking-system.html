@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="icon" type="image/svg+xml" href="../../logo.svg" />
+  <title>Проект E — Система бронирования встреч</title>
+  <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+  <style>
+    :root { color-scheme: dark; }
+    body { background-color: #020617 !important; color: #e2e8f0 !important; }
+    .bg-slate-50 { background-color: #020617 !important; }
+    .bg-white { background-color: #0f172a !important; }
+    .bg-slate-100 { background-color: #1e293b !important; }
+    .text-slate-900, .text-slate-800 { color: #e2e8f0 !important; }
+    .text-slate-700, .text-slate-600, .text-slate-500 { color: #cbd5e1 !important; }
+    .border-slate-200, .border-slate-300 { border-color: #334155 !important; }
+    .ring-slate-200 { --tw-ring-color: rgb(51 65 85 / 1) !important; }
+    .hover\:bg-slate-100:hover { background-color: #1e293b !important; }
+    .bg-blue-50 { background-color: #0b2545 !important; }
+    .bg-amber-50, .bg-yellow-50 { background-color: #3a2e12 !important; }
+    .bg-emerald-50, .bg-green-50 { background-color: #0f2e27 !important; }
+    .bg-red-50 { background-color: #3a1717 !important; }
+    .ring-blue-200, .border-blue-200 { --tw-ring-color: rgb(37 99 235 / 0.35) !important; border-color: rgb(37 99 235 / 0.35) !important; }
+    .ring-amber-200, .border-amber-200, .ring-yellow-200, .border-yellow-200 { --tw-ring-color: rgb(245 158 11 / 0.35) !important; border-color: rgb(245 158 11 / 0.35) !important; }
+    .ring-emerald-200, .border-emerald-200, .ring-green-200, .border-green-200 { --tw-ring-color: rgb(16 185 129 / 0.35) !important; border-color: rgb(16 185 129 / 0.35) !important; }
+    .ring-red-200, .border-red-200 { --tw-ring-color: rgb(239 68 68 / 0.35) !important; border-color: rgb(239 68 68 / 0.35) !important; }
+    .text-amber-800, .text-yellow-800, .text-blue-800, .text-emerald-800, .text-green-800, .text-red-800 { color: #e2e8f0 !important; }
+  </style>
+</head>
+<body class="bg-slate-50 text-slate-900">
+  <main class="mx-auto max-w-4xl px-4 py-10">
+    <nav aria-label="Хлебные крошки" class="mb-4">
+      <ol class="flex flex-wrap items-center gap-2 text-sm text-slate-500">
+        <li><a href="../../index.html" class="transition hover:text-blue-700 hover:underline">Главная</a></li>
+        <li class="text-slate-300" aria-hidden="true">/</li>
+        <li aria-current="page" class="font-medium text-slate-700">Проект E</li>
+      </ol>
+    </nav>
+
+    <header class="mb-8 rounded-2xl bg-white p-6 shadow-sm ring-1 ring-slate-200">
+      <p class="mb-2 text-sm font-semibold uppercase tracking-wide text-blue-700">Итоговые проекты</p>
+      <h1 class="text-2xl font-bold md:text-3xl">Проект E. Система бронирования встреч</h1>
+      <p class="mt-3 text-slate-700">Продвинутый итог: построить SPA для записи на встречи с календарем, слотами времени и подтверждением брони.</p>
+    </header>
+
+    <section class="mb-6 rounded-2xl bg-white p-6 shadow-sm ring-1 ring-slate-200">
+      <h2 class="mb-3 text-xl font-semibold">Функции приложения</h2>
+      <ul class="list-disc space-y-1 pl-6 text-slate-700">
+        <li>Календарь с доступными слотами на выбранную дату.</li>
+        <li>Создание, перенос и отмена бронирования.</li>
+        <li>Фильтр по специалистам и типу встречи.</li>
+        <li>История бронирований пользователя с поиском.</li>
+      </ul>
+    </section>
+
+    <section class="mb-6 rounded-2xl bg-blue-50 p-6 shadow-sm ring-1 ring-blue-200">
+      <h2 class="mb-3 text-xl font-semibold">Техническая реализация</h2>
+      <ul class="list-disc space-y-1 pl-6 text-slate-700">
+        <li>Vue Router: отдельные экраны календаря, подтверждения и истории.</li>
+        <li>Pinia для централизованного состояния слотов и бронирований.</li>
+        <li>Работа с API: асинхронная загрузка доступности и отправка заявок.</li>
+        <li>Валидация формы и защита от двойного бронирования одного слота.</li>
+      </ul>
+    </section>
+
+    <section class="mb-8 rounded-2xl bg-amber-50 p-6 shadow-sm ring-1 ring-amber-200">
+      <h2 class="mb-3 text-xl font-semibold">Критерий завершения</h2>
+      <p class="text-slate-700">Пользователь может выбрать дату и слот, забронировать встречу и увидеть запись в истории без ошибок состояния.</p>
+    </section>
+
+    <section class="mb-6 rounded-2xl bg-white p-6 shadow-sm ring-1 ring-slate-200">
+      <h2 class="mb-3 text-xl font-semibold">Подробные требования</h2>
+      <ul class="list-disc space-y-1 pl-6 text-slate-700">
+        <li>Слот: <code>{ id, specialistId, date, time, duration, isBooked }</code>.</li>
+        <li>Бронирование: <code>{ id, slotId, userName, phone, note, status }</code>.</li>
+        <li>Статусы брони: pending, confirmed, canceled, completed.</li>
+        <li>Блокируй прошедшие даты и пересечение по времени у одного специалиста.</li>
+        <li>Добавь экран администратора для подтверждения/отмены заявок.</li>
+      </ul>
+    </section>
+
+    <section class="mb-8 rounded-2xl bg-blue-50 p-6 shadow-sm ring-1 ring-blue-200">
+      <h2 class="mb-3 text-xl font-semibold">Шаги реализации</h2>
+      <ol class="list-decimal space-y-1 pl-6 text-slate-700">
+        <li>Собери календарный вид и загрузку доступных слотов из mock API.</li>
+        <li>Реализуй форму бронирования с валидацией телефона и имени.</li>
+        <li>Добавь страницу истории и фильтрацию по статусу записи.</li>
+        <li>Организуй optimistic update с откатом при неуспешном API-ответе.</li>
+        <li>Покрой ключевые сценарии тестами: booking, cancel, reschedule.</li>
+      </ol>
+    </section>
+
+    <nav class="flex flex-wrap items-center gap-3">
+      <a href="../../index.html" class="rounded-lg border border-slate-300 bg-white px-4 py-2 text-sm hover:bg-slate-100">К проектам</a>
+      <a href="04-mini-crm.html" class="rounded-lg border border-slate-300 bg-white px-4 py-2 text-sm hover:bg-slate-100">Назад</a>
+    </nav>
+  </main>
+</body>
+</html>

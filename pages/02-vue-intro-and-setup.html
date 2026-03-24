@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="icon" type="image/svg+xml" href="../logo.svg" />
+  <title>Раздел 1 — Введение в Vue.js 3 и первый проект</title>
+  <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+  <style>
+    :root { color-scheme: dark; }
+    body { background-color: #020617 !important; color: #e2e8f0 !important; }
+    .bg-slate-50 { background-color: #020617 !important; }
+    .bg-white { background-color: #0f172a !important; }
+    .bg-slate-100 { background-color: #1e293b !important; }
+    .text-slate-900, .text-slate-800 { color: #e2e8f0 !important; }
+    .text-slate-700, .text-slate-600, .text-slate-500 { color: #cbd5e1 !important; }
+    .border-slate-200, .border-slate-300 { border-color: #334155 !important; }
+    .ring-slate-200 { --tw-ring-color: rgb(51 65 85 / 1) !important; }
+    .hover\:bg-slate-100:hover { background-color: #1e293b !important; }
+
+
+  .bg-blue-50 { background-color: #0b2545 !important; }
+  .bg-amber-50, .bg-yellow-50 { background-color: #3a2e12 !important; }
+  .bg-emerald-50, .bg-green-50 { background-color: #0f2e27 !important; }
+  .bg-red-50 { background-color: #3a1717 !important; }
+
+  .ring-blue-200, .border-blue-200 { --tw-ring-color: rgb(37 99 235 / 0.35) !important; border-color: rgb(37 99 235 / 0.35) !important; }
+  .ring-amber-200, .border-amber-200, .ring-yellow-200, .border-yellow-200 { --tw-ring-color: rgb(245 158 11 / 0.35) !important; border-color: rgb(245 158 11 / 0.35) !important; }
+  .ring-emerald-200, .border-emerald-200, .ring-green-200, .border-green-200 { --tw-ring-color: rgb(16 185 129 / 0.35) !important; border-color: rgb(16 185 129 / 0.35) !important; }
+  .ring-red-200, .border-red-200 { --tw-ring-color: rgb(239 68 68 / 0.35) !important; border-color: rgb(239 68 68 / 0.35) !important; }
+
+  .text-amber-800, .text-yellow-800, .text-blue-800, .text-emerald-800, .text-green-800, .text-red-800 {
+    color: #e2e8f0 !important;
+  }
+</style>
+  <link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/styles/github-dark.min.css"
+  />
+  <style>
+    pre code.hljs {
+      background: transparent !important;
+      padding: 0 !important;
+    }
+
+    .quiz-option-correct {
+      background-color: #dcfce7 !important;
+      border-color: #22c55e !important;
+      color: #14532d !important;
+    }
+
+    .quiz-option-wrong {
+      background-color: #fee2e2 !important;
+      border-color: #ef4444 !important;
+      color: #7f1d1d !important;
+    }
+
+    .quiz-option-muted {
+      opacity: 0.65;
+    }
+  </style>
+</head>
+<body class="bg-slate-50 text-slate-900">
+  <main class="mx-auto max-w-4xl px-4 py-10">
+    <nav aria-label="Хлебные крошки" class="mb-4">
+      <ol class="flex flex-wrap items-center gap-2 text-sm text-slate-500">
+        <li><a href="../index.html" class="transition hover:text-blue-700 hover:underline">Главная</a></li>
+        <li class="text-slate-300" aria-hidden="true">/</li>
+        <li aria-current="page" class="font-medium text-slate-700">Текущий раздел</li>
+      </ol>
+    </nav>
+    <header class="mb-8 rounded-2xl bg-white p-6 shadow-sm ring-1 ring-slate-200">
+      <p class="mb-2 text-sm font-semibold uppercase tracking-wide text-blue-700">Современный учебник Vue.js 3</p>
+      <h1 class="text-2xl font-bold md:text-3xl">Раздел 1. Введение в Vue.js 3 и запуск первого проекта</h1>
+      <p class="mt-3 text-slate-700">
+        Короткий и практический старт: что такое Vue, когда его выбирать, как запустить проект и быстро изменить стартовый экран.
+      </p>
+    </header>
+
+    <section class="mb-6 rounded-2xl bg-white p-6 shadow-sm ring-1 ring-slate-200">
+      <h2 class="mb-3 text-xl font-semibold">Цель урока</h2>
+      <p class="text-slate-700">Понять базовые принципы Vue и уверенно запустить первый проект на Vite с понятной структурой файлов.</p>
+    </section>
+
+    <section class="mb-6 rounded-2xl bg-white p-6 shadow-sm ring-1 ring-slate-200">
+      <h2 class="mb-3 text-xl font-semibold">Теория простыми словами (что внутри)</h2>
+      <div class="space-y-4 text-slate-800">
+        <div class="rounded-xl bg-slate-50 p-4 ring-1 ring-slate-200">
+          <h3 class="mb-2 text-lg font-medium">1) Что такое Vue простыми словами (реактивный UI)</h3>
+          <p>
+            Vue можно представить как "умный слой" между данными и экраном.
+            Меняешь данные — интерфейс обновляется сам. Это и есть реактивность.
+          </p>
+        </div>
+        <div class="rounded-xl bg-slate-50 p-4 ring-1 ring-slate-200">
+          <h3 class="mb-2 text-lg font-medium">2) Когда Vue подходит лучше всего</h3>
+          <ul class="list-disc space-y-1 pl-6">
+            <li>Когда нужен понятный вход для новичка.</li>
+            <li>Когда проект растет постепенно: от маленького виджета до большого SPA.</li>
+            <li>Когда важно быстро делать интерфейсы и не тонуть в сложности.</li>
+          </ul>
+        </div>
+        <div class="rounded-xl bg-slate-50 p-4 ring-1 ring-slate-200">
+          <h3 class="mb-2 text-lg font-medium">3) Варианты подключения: CDN и Vite</h3>
+          <ul class="list-disc space-y-1 pl-6">
+            <li><strong>CDN:</strong> удобно для быстрого эксперимента в одном HTML-файле.</li>
+            <li><strong>Vite:</strong> стандарт для реальных проектов (быстрый запуск, удобная сборка, структура).</li>
+          </ul>
+        </div>
+        <div class="rounded-xl bg-slate-50 p-4 ring-1 ring-slate-200">
+          <h3 class="mb-2 text-lg font-medium">4) Структура проекта: <code>main.js</code>, <code>App.vue</code>, <code>components</code></h3>
+          <ul class="list-disc space-y-1 pl-6">
+            <li><code>main.js</code> — точка входа. Здесь приложение подключается к странице.</li>
+            <li><code>App.vue</code> — корневой компонент, "главный экран".</li>
+            <li><code>components/</code> — папка для переиспользуемых частей интерфейса.</li>
+          </ul>
+        </div>
+        <div class="rounded-xl bg-slate-50 p-4 ring-1 ring-slate-200">
+          <h3 class="mb-2 text-lg font-medium">5) DevTools для Vue</h3>
+          <p>
+            DevTools помогает видеть компоненты, их состояние и события.
+            Это как "рентген" для интерфейса: сразу видно, что именно происходит.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <section class="mb-6 rounded-2xl bg-white p-6 shadow-sm ring-1 ring-slate-200">
+      <h2 class="mb-3 text-xl font-semibold">Практика по шагам</h2>
+      <p class="mb-4 text-slate-700">Цель практики: запустить проект на Vite и поменять стартовый экран.</p>
+
+      <div class="space-y-5">
+        <article class="rounded-xl bg-blue-50 p-4 ring-1 ring-blue-200">
+          <h3 class="mb-2 text-lg font-medium">Перед стартом: что должно быть установлено</h3>
+          <ul class="list-disc space-y-1 pl-6">
+            <li><strong>Node.js 20+</strong> (проверка: <code>node -v</code>).</li>
+            <li><strong>npm</strong> (проверка: <code>npm -v</code>).</li>
+          </ul>
+          <p class="mt-2 text-sm text-slate-700">
+            Если команда не найдена, сначала установи Node.js с официального сайта, затем открой новый PowerShell.
+          </p>
+        </article>
+
+        <article class="rounded-xl bg-blue-50 p-4 ring-1 ring-blue-200">
+          <h3 class="mb-2 text-lg font-medium">Как создать Vue-приложение с нуля (Windows PowerShell)</h3>
+          <p class="mb-2">Скопируй и выполни команды по порядку:</p>
+          <pre class="overflow-x-auto rounded-lg bg-slate-900 p-3 text-sm text-slate-100"><code class="language-bash"># 1) Перейди в папку, где будет проект
+cd C:\Git
+
+# 2) Создай новый Vue-проект
+npm create vue@latest my-first-vue-app
+
+# 3) Перейди в проект
+cd .\my-first-vue-app
+
+# 4) Установи зависимости
+npm install
+
+# 5) Запусти проект
+npm run dev</code></pre>
+          <p class="mt-2 text-sm text-slate-700">
+            После запуска в терминале появится локальный адрес (обычно <code>http://localhost:5173</code>). Открой его в браузере.
+          </p>
+        </article>
+
+        <article class="rounded-xl bg-slate-50 p-4 ring-1 ring-slate-200">
+          <h3 class="mb-2 text-lg font-medium">Шаг 1. Создай проект</h3>
+          <p class="mb-2">Зачем нужен шаг: создаем "скелет" приложения с готовой структурой файлов.</p>
+          <pre class="overflow-x-auto rounded-lg bg-slate-900 p-3 text-sm text-slate-100"><code class="language-bash">npm create vue@latest my-first-vue-app</code></pre>
+          <p class="mt-2 text-sm text-slate-700">Что изменится: появится папка проекта со стартовыми файлами Vue.</p>
+        </article>
+
+        <article class="rounded-xl bg-slate-50 p-4 ring-1 ring-slate-200">
+          <h3 class="mb-2 text-lg font-medium">Шаг 2. Установи зависимости и запусти проект</h3>
+          <p class="mb-2">Зачем нужен шаг: без зависимостей и dev-сервера приложение не откроется в браузере.</p>
+          <pre class="overflow-x-auto rounded-lg bg-slate-900 p-3 text-sm text-slate-100"><code class="language-bash">cd my-first-vue-app
+npm install
+npm run dev</code></pre>
+          <p class="mt-2 text-sm text-slate-700">Связь с шагом 1: теперь "скелет" превращается в рабочее приложение.</p>
+        </article>
+
+        <article class="rounded-xl bg-slate-50 p-4 ring-1 ring-slate-200">
+          <h3 class="mb-2 text-lg font-medium">Шаг 3. Найди точку входа и главный компонент</h3>
+          <p class="mb-2">Зачем нужен шаг: важно понять, откуда приложение стартует.</p>
+          <p class="mb-2 text-sm text-slate-700">Фрагмент 1 — <code>src/main.js</code>:</p>
+          <pre class="overflow-x-auto rounded-lg bg-slate-900 p-3 text-sm text-slate-100"><code class="language-javascript">import { createApp } from 'vue'
+import App from './App.vue'
+
+createApp(App).mount('#app')</code></pre>
+          <p class="mt-2 text-sm text-slate-700">
+            Что делает фрагмент: создает приложение из <code>App.vue</code> и вставляет его в элемент с id <code>app</code>.
+          </p>
+        </article>
+
+        <article class="rounded-xl bg-slate-50 p-4 ring-1 ring-slate-200">
+          <h3 class="mb-2 text-lg font-medium">Шаг 4. Измени стартовый экран</h3>
+          <p class="mb-2">Зачем нужен шаг: проверяем, что проект работает и вы контролируете вывод на странице.</p>
+          <p class="mb-2 text-sm text-slate-700">Фрагмент 2 — минимальный <code>src/App.vue</code>:</p>
+          <pre class="overflow-x-auto rounded-lg bg-slate-900 p-3 text-sm text-slate-100"><code class="language-html">&lt;template&gt;
+  &lt;main&gt;
+    &lt;h1&gt;Привет, Vue!&lt;/h1&gt;
+    &lt;p&gt;Мой первый проект успешно запущен.&lt;/p&gt;
+  &lt;/main&gt;
+&lt;/template&gt;</code></pre>
+          <p class="mt-2 text-sm text-slate-700">
+            Связь с предыдущим шагом: <code>main.js</code> загружает <code>App.vue</code>, поэтому изменения видны сразу.
+          </p>
+        </article>
+
+        <article class="rounded-xl bg-slate-50 p-4 ring-1 ring-slate-200">
+          <h3 class="mb-2 text-lg font-medium">Шаг 5. Подключи Vue DevTools</h3>
+          <p>
+            Зачем нужен шаг: видеть дерево компонентов и состояние приложения в реальном времени.
+            После установки расширения открой вкладку Vue в инструментах разработчика браузера.
+          </p>
+        </article>
+      </div>
+    </section>
+
+    <section class="mb-6 rounded-2xl bg-white p-6 shadow-sm ring-1 ring-slate-200">
+      <h2 class="mb-3 text-xl font-semibold">Практическое задание</h2>
+      <p class="mb-2">Создать «Привет, Vue».</p>
+      <ol class="list-decimal space-y-1 pl-6">
+        <li>Создай и запусти проект командами из блока «Как создать Vue-приложение с нуля».</li>
+        <li>Открой <code>src/App.vue</code>.</li>
+        <li>Сделай заголовок «Привет, Vue!» и добавь короткое описание о себе.</li>
+        <li>Добавь текущую дату обычным текстом.</li>
+        <li>Проверь страницу в браузере и убедись, что все отображается.</li>
+      </ol>
+    </section>
+
+    <section class="mb-8 rounded-2xl bg-white p-6 shadow-sm ring-1 ring-slate-200">
+      <h2 class="mb-3 text-xl font-semibold">Типичные ошибки</h2>
+      <ul class="list-disc space-y-1 pl-6 text-slate-700">
+        <li>Запускать команды не в папке проекта и получать "package.json not found".</li>
+        <li>Путать точку входа <code>src/main.js</code> и корневой компонент <code>App.vue</code>.</li>
+        <li>Использовать CDN-подход там, где нужен полноценный проект на Vite.</li>
+      </ul>
+    </section>
+
+    <section class="mb-8 rounded-2xl bg-white p-6 shadow-sm ring-1 ring-slate-200">
+      <h2 class="mb-3 text-xl font-semibold">Проверка знаний</h2>
+      <p class="mb-4 text-slate-700">
+        Пройди короткий тест по разделу. Вопросы идут по одному, чтобы было проще сосредоточиться.
+      </p>
+      <button
+        id="open-quiz"
+        type="button"
+        class="rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-400"
+      >
+        Пройти тест
+      </button>
+    </section>
+
+    <nav class="flex flex-wrap items-center gap-3">
+      <a href="../index.html" class="rounded-lg border border-slate-300 bg-white px-4 py-2 text-sm hover:bg-slate-100">К содержанию</a>
+      <a href="01-how-to-learn.html" class="rounded-lg border border-slate-300 bg-white px-4 py-2 text-sm hover:bg-slate-100">Назад</a>
+      <a href="03-template-basics.html" class="rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700">Вперед</a>
+    </nav>
+  </main>
+
+  <div id="quiz-modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-slate-950/60 p-4">
+    <div class="w-full max-w-xl rounded-2xl bg-white p-6 shadow-xl ring-1 ring-slate-200">
+      <div class="mb-4 flex items-start justify-between gap-4">
+        <div>
+          <h2 class="text-xl font-semibold">Тест по разделу 1</h2>
+          <p id="quiz-progress" class="mt-1 text-sm text-slate-600"></p>
+        </div>
+        <button
+          id="close-quiz"
+          type="button"
+          class="rounded-md border border-slate-300 px-3 py-1.5 text-sm hover:bg-slate-100"
+        >
+          Закрыть
+        </button>
+      </div>
+
+      <p id="quiz-question" class="mb-4 text-base font-medium text-slate-900"></p>
+      <div id="quiz-options" class="space-y-2"></div>
+      <p id="quiz-feedback" class="mt-4 hidden text-sm text-slate-700"></p>
+
+      <div class="mt-5 flex flex-wrap gap-2">
+        <button
+          id="restart-quiz"
+          type="button"
+          class="hidden rounded-lg border border-slate-300 bg-white px-4 py-2 text-sm hover:bg-slate-100"
+        >
+          Пройти заново
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/highlight.min.js"></script>
+  <script>
+    hljs.highlightAll();
+
+    const copyIcon = `
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2">
+        <rect x="9" y="9" width="13" height="13" rx="2"></rect>
+        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+      </svg>
+    `;
+
+    const checkIcon = `
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M20 6 9 17l-5-5"></path>
+      </svg>
+    `;
+
+    document.querySelectorAll("pre").forEach((pre) => {
+      pre.classList.add("relative", "pr-12");
+
+      const button = document.createElement("button");
+      button.type = "button";
+      button.className =
+        "absolute right-2.5 top-2.5 inline-flex h-7 w-7 items-center justify-center rounded-md border border-slate-500/50 bg-slate-800/80 text-slate-100 shadow-sm transition-colors hover:bg-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-offset-1 focus:ring-offset-slate-900";
+      button.innerHTML = copyIcon;
+      button.setAttribute("aria-label", "Скопировать код");
+      button.setAttribute("title", "Скопировать");
+
+      button.addEventListener("click", async () => {
+        const code = pre.querySelector("code");
+        const text = code ? code.innerText : pre.innerText;
+
+        try {
+          await navigator.clipboard.writeText(text);
+          button.innerHTML = checkIcon;
+          button.setAttribute("title", "Скопировано");
+          button.classList.add("text-emerald-300");
+          setTimeout(() => {
+            button.innerHTML = copyIcon;
+            button.setAttribute("title", "Скопировать");
+            button.classList.remove("text-emerald-300");
+          }, 1200);
+        } catch {
+          button.setAttribute("title", "Не удалось скопировать");
+        }
+      });
+
+      pre.appendChild(button);
+    });
+
+    const quizData = [
+      {
+        question: "Зачем Vite в современном Vue-проекте?",
+        options: [
+          "Чтобы ускорить запуск и разработку проекта",
+          "Чтобы заменить браузер",
+          "Чтобы писать только CSS"
+        ],
+        correct: 0
+      },
+      {
+        question: "Где точка входа приложения Vue?",
+        options: [
+          "src/components/",
+          "src/main.js",
+          "public/index.css"
+        ],
+        correct: 1
+      },
+      {
+        question: "Для чего нужна папка components?",
+        options: [
+          "Для хранения переиспользуемых частей интерфейса",
+          "Только для изображений",
+          "Только для тестов"
+        ],
+        correct: 0
+      },
+      {
+        question: "Когда лучше использовать CDN, а когда Vite?",
+        options: [
+          "CDN — для быстрого эксперимента, Vite — для реального проекта",
+          "Всегда только CDN",
+          "Всегда только Vite для одной кнопки"
+        ],
+        correct: 0
+      }
+    ];
+
+    const openQuizBtn = document.getElementById("open-quiz");
+    const closeQuizBtn = document.getElementById("close-quiz");
+    const quizModal = document.getElementById("quiz-modal");
+    const quizProgress = document.getElementById("quiz-progress");
+    const quizQuestion = document.getElementById("quiz-question");
+    const quizOptions = document.getElementById("quiz-options");
+    const quizFeedback = document.getElementById("quiz-feedback");
+    const restartQuizBtn = document.getElementById("restart-quiz");
+
+    let currentQuestionIndex = 0;
+    let score = 0;
+    let answered = false;
+    let autoNextTimer = null;
+
+    function renderQuestion() {
+      const item = quizData[currentQuestionIndex];
+      answered = false;
+      if (autoNextTimer) {
+        clearTimeout(autoNextTimer);
+        autoNextTimer = null;
+      }
+      quizFeedback.textContent = "";
+      quizFeedback.className = "mt-4 hidden text-sm text-slate-700";
+      restartQuizBtn.classList.add("hidden");
+      quizProgress.textContent = `Вопрос ${currentQuestionIndex + 1} из ${quizData.length}`;
+      quizQuestion.textContent = item.question;
+      quizOptions.innerHTML = "";
+
+      item.options.forEach((optionText, index) => {
+        const optionBtn = document.createElement("button");
+        optionBtn.type = "button";
+        optionBtn.className =
+          "block w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-left text-sm text-slate-800 shadow-sm transition-all hover:-translate-y-0.5 hover:border-slate-300 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-blue-300";
+        optionBtn.textContent = optionText;
+        optionBtn.addEventListener("click", () => handleAnswer(index));
+        quizOptions.appendChild(optionBtn);
+      });
+    }
+
+    function handleAnswer(selectedIndex) {
+      if (answered) return;
+      answered = true;
+
+      const item = quizData[currentQuestionIndex];
+      const optionButtons = quizOptions.querySelectorAll("button");
+      optionButtons.forEach((btn, idx) => {
+        btn.disabled = true;
+        btn.classList.remove("hover:-translate-y-0.5", "hover:shadow-md");
+        if (idx === item.correct) {
+          btn.classList.add("quiz-option-correct");
+        } else if (idx === selectedIndex) {
+          btn.classList.add("quiz-option-wrong");
+        } else {
+          btn.classList.add("quiz-option-muted");
+        }
+      });
+
+      if (selectedIndex === item.correct) {
+        score += 1;
+      }
+
+      if (currentQuestionIndex < quizData.length - 1) {
+        autoNextTimer = setTimeout(() => {
+          currentQuestionIndex += 1;
+          renderQuestion();
+        }, 2000);
+      } else {
+        quizProgress.textContent = "Тест завершен";
+        quizQuestion.textContent = `Результат: ${score} из ${quizData.length}`;
+        quizFeedback.textContent = score === quizData.length
+          ? "Отличный результат."
+          : "Можно улучшить результат, попробуй еще раз.";
+        quizFeedback.className = "mt-4 text-sm text-slate-700";
+        restartQuizBtn.classList.remove("hidden");
+      }
+    }
+
+    function openQuiz() {
+      currentQuestionIndex = 0;
+      score = 0;
+      quizModal.classList.remove("hidden");
+      quizModal.classList.add("flex");
+      renderQuestion();
+    }
+
+    function closeQuiz() {
+      if (autoNextTimer) {
+        clearTimeout(autoNextTimer);
+        autoNextTimer = null;
+      }
+      quizModal.classList.add("hidden");
+      quizModal.classList.remove("flex");
+    }
+
+    openQuizBtn.addEventListener("click", openQuiz);
+    closeQuizBtn.addEventListener("click", closeQuiz);
+
+    restartQuizBtn.addEventListener("click", () => {
+      if (autoNextTimer) {
+        clearTimeout(autoNextTimer);
+        autoNextTimer = null;
+      }
+      currentQuestionIndex = 0;
+      score = 0;
+      renderQuestion();
+    });
+
+    quizModal.addEventListener("click", (event) => {
+      if (event.target === quizModal) closeQuiz();
+    });
+  </script>
+</body>
+</html>

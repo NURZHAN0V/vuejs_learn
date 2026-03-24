@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="icon" type="image/svg+xml" href="../../logo.svg" />
+  <title>Проект D — Мини-CRM</title>
+  <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+  <style>
+    :root { color-scheme: dark; }
+    body { background-color: #020617 !important; color: #e2e8f0 !important; }
+    .bg-slate-50 { background-color: #020617 !important; }
+    .bg-white { background-color: #0f172a !important; }
+    .bg-slate-100 { background-color: #1e293b !important; }
+    .text-slate-900, .text-slate-800 { color: #e2e8f0 !important; }
+    .text-slate-700, .text-slate-600, .text-slate-500 { color: #cbd5e1 !important; }
+    .border-slate-200, .border-slate-300 { border-color: #334155 !important; }
+    .ring-slate-200 { --tw-ring-color: rgb(51 65 85 / 1) !important; }
+    .hover\:bg-slate-100:hover { background-color: #1e293b !important; }
+    .bg-blue-50 { background-color: #0b2545 !important; }
+    .bg-amber-50, .bg-yellow-50 { background-color: #3a2e12 !important; }
+    .bg-emerald-50, .bg-green-50 { background-color: #0f2e27 !important; }
+    .bg-red-50 { background-color: #3a1717 !important; }
+    .ring-blue-200, .border-blue-200 { --tw-ring-color: rgb(37 99 235 / 0.35) !important; border-color: rgb(37 99 235 / 0.35) !important; }
+    .ring-amber-200, .border-amber-200, .ring-yellow-200, .border-yellow-200 { --tw-ring-color: rgb(245 158 11 / 0.35) !important; border-color: rgb(245 158 11 / 0.35) !important; }
+    .ring-emerald-200, .border-emerald-200, .ring-green-200, .border-green-200 { --tw-ring-color: rgb(16 185 129 / 0.35) !important; border-color: rgb(16 185 129 / 0.35) !important; }
+    .ring-red-200, .border-red-200 { --tw-ring-color: rgb(239 68 68 / 0.35) !important; border-color: rgb(239 68 68 / 0.35) !important; }
+    .text-amber-800, .text-yellow-800, .text-blue-800, .text-emerald-800, .text-green-800, .text-red-800 { color: #e2e8f0 !important; }
+  </style>
+</head>
+<body class="bg-slate-50 text-slate-900">
+  <main class="mx-auto max-w-4xl px-4 py-10">
+    <nav aria-label="Хлебные крошки" class="mb-4">
+      <ol class="flex flex-wrap items-center gap-2 text-sm text-slate-500">
+        <li><a href="../../index.html" class="transition hover:text-blue-700 hover:underline">Главная</a></li>
+        <li class="text-slate-300" aria-hidden="true">/</li>
+        <li aria-current="page" class="font-medium text-slate-700">Проект D</li>
+      </ol>
+    </nav>
+
+    <header class="mb-8 rounded-2xl bg-white p-6 shadow-sm ring-1 ring-slate-200">
+      <p class="mb-2 text-sm font-semibold uppercase tracking-wide text-blue-700">Итоговые проекты</p>
+      <h1 class="text-2xl font-bold md:text-3xl">Проект D. Мини-CRM</h1>
+      <p class="mt-3 text-slate-700">Организуй работу с клиентами: воронка лидов, статусы сделок, карточка клиента и базовая аналитика.</p>
+    </header>
+
+    <section class="mb-6 rounded-2xl bg-white p-6 shadow-sm ring-1 ring-slate-200">
+      <h2 class="mb-3 text-xl font-semibold">Минимальный scope</h2>
+      <ul class="list-disc space-y-1 pl-6 text-slate-700">
+        <li>Список лидов со статусами: new / in-progress / won / lost.</li>
+        <li>Создание и редактирование карточки клиента.</li>
+        <li>Перетаскивание или переключение статуса по кнопке.</li>
+        <li>Сводка по количеству лидов в каждом статусе.</li>
+      </ul>
+    </section>
+
+    <section class="mb-6 rounded-2xl bg-blue-50 p-6 shadow-sm ring-1 ring-blue-200">
+      <h2 class="mb-3 text-xl font-semibold">Архитектурные требования</h2>
+      <ul class="list-disc space-y-1 pl-6 text-slate-700">
+        <li>Используй Pinia для централизованного стейта лидов.</li>
+        <li>Раздели UI на модули: board, lead-card, lead-form, stats.</li>
+        <li>Добавь базовый роутинг: `/leads`, `/leads/:id`.</li>
+      </ul>
+    </section>
+
+    <section class="mb-8 rounded-2xl bg-amber-50 p-6 shadow-sm ring-1 ring-amber-200">
+      <h2 class="mb-3 text-xl font-semibold">Критерий завершения</h2>
+      <p class="text-slate-700">Система позволяет пройти полный цикл лида от создания до финального статуса и показывает актуальную сводку.</p>
+    </section>
+
+    <section class="mb-6 rounded-2xl bg-white p-6 shadow-sm ring-1 ring-slate-200">
+      <h2 class="mb-3 text-xl font-semibold">Расширенное ТЗ</h2>
+      <ul class="list-disc space-y-1 pl-6 text-slate-700">
+        <li>Карточка лида: <code>{ id, name, company, value, status, source, owner, updatedAt }</code>.</li>
+        <li>Обязательные источники лида: website, ads, referral, outbound.</li>
+        <li>Лента изменений по лиду: кто и когда менял статус.</li>
+        <li>Фильтры: по менеджеру, источнику и диапазону суммы сделки.</li>
+      </ul>
+    </section>
+
+    <section class="mb-8 rounded-2xl bg-blue-50 p-6 shadow-sm ring-1 ring-blue-200">
+      <h2 class="mb-3 text-xl font-semibold">Проверка сценариев</h2>
+      <ol class="list-decimal space-y-1 pl-6 text-slate-700">
+        <li>Создай 5 лидов, переведи 2 из них в <code>won</code> и 1 в <code>lost</code>.</li>
+        <li>Проверь, что в сводке корректно пересчитались все статусы.</li>
+        <li>Открой страницу лида по прямой ссылке <code>/leads/:id</code> после reload.</li>
+        <li>Убедись, что история изменений отображает последние действия сверху.</li>
+      </ol>
+    </section>
+
+    <nav class="flex flex-wrap items-center gap-3">
+      <a href="../../index.html" class="rounded-lg border border-slate-300 bg-white px-4 py-2 text-sm hover:bg-slate-100">К проектам</a>
+      <a href="03-product-catalog.html" class="rounded-lg border border-slate-300 bg-white px-4 py-2 text-sm hover:bg-slate-100">Назад</a>
+      <a href="05-booking-system.html" class="rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700">Вперед</a>
+    </nav>
+  </main>
+</body>
+</html>
