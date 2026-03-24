@@ -105,9 +105,42 @@
         <div class="rounded-xl bg-slate-50 p-4 ring-1 ring-slate-200">
           <h3 class="mb-2 text-lg font-medium">3) Варианты подключения: CDN и Vite</h3>
           <ul class="list-disc space-y-1 pl-6">
-            <li><strong>CDN:</strong> удобно для быстрого эксперимента в одном HTML-файле.</li>
-            <li><strong>Vite:</strong> стандарт для реальных проектов (быстрый запуск, удобная сборка, структура).</li>
+            <li><strong>CDN:</strong> "быстрый пробный режим". Подключаешь Vue одной строкой в <code>index.html</code> и сразу проверяешь идею. Хорошо для короткого эксперимента.</li>
+            <li><strong>Vite:</strong> "рабочий режим". Создается полноценный проект с папками, командами запуска и удобной разработкой. Это вариант для учебы и реальных приложений.</li>
+            <li><strong>Что выбрать новичку:</strong> если делаешь курс и проекты — сразу выбирай <strong>Vite</strong>. CDN оставь для разовых мини-демо.</li>
           </ul>
+          <div class="mt-4 rounded-lg bg-white p-3 ring-1 ring-slate-200">
+            <p class="mb-2 text-sm font-medium">Как подключить Vue через CDN (быстро и просто):</p>
+            <pre class="overflow-x-auto rounded-lg bg-slate-900 p-3 text-xs text-slate-100"><code class="language-html">&lt;!doctype html&gt;
+&lt;html lang="ru"&gt;
+&lt;body&gt;
+  &lt;div id="app"&gt;{{ message }}&lt;/div&gt;
+
+  &lt;script src="https://unpkg.com/vue@3/dist/vue.global.js"&gt;&lt;/script&gt;
+  &lt;script&gt;
+    Vue.createApp({
+      data() {
+        return { message: 'Привет, Vue через CDN!' }
+      }
+    }).mount('#app')
+  &lt;/script&gt;
+&lt;/body&gt;
+&lt;/html&gt;</code></pre>
+          </div>
+          <div class="mt-3 rounded-lg bg-white p-3 ring-1 ring-slate-200">
+            <p class="mb-2 text-sm font-medium">Как подключить Vue обычным способом (Vite):</p>
+            <pre class="overflow-x-auto rounded-lg bg-slate-900 p-3 text-xs text-slate-100"><code class="language-bash">npm create vue@latest my-first-vue-app
+cd my-first-vue-app
+npm install
+npm run dev</code></pre>
+          </div>
+          <div class="mt-3 rounded-lg bg-white p-3 ring-1 ring-slate-200">
+            <p class="text-sm font-medium">В чем разница:</p>
+            <ul class="mt-2 list-disc space-y-1 pl-6 text-sm text-slate-700">
+              <li><strong>CDN:</strong> быстро проверить идею в одном файле, но неудобно развивать большой проект.</li>
+              <li><strong>Vite:</strong> чуть дольше старт, зато удобная структура, команды и нормальная работа для курса и реальных задач.</li>
+            </ul>
+          </div>
         </div>
         <div class="rounded-xl bg-slate-50 p-4 ring-1 ring-slate-200">
           <h3 class="mb-2 text-lg font-medium">4) Как все связано: фреймворк, Node.js, фронтенд и бэкенд</h3>
