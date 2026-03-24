@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <link rel="icon" type="image/svg+xml" href="../logo.svg" />
-  <title>Раздел 16.1 — Pinia: архитектура, плагины, persist</title>
+  <title>Раздел 19 — Pinia: архитектура, плагины, persist</title>
   <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
   <link rel="stylesheet" href="../assets/progress-tracker.css" />
   <script src="../assets/progress-tracker.js" defer></script>
@@ -54,13 +54,13 @@
     </nav>
     <header class="mb-8 rounded-2xl bg-white p-6 shadow-sm ring-1 ring-slate-200">
       <p class="mb-2 text-sm font-semibold uppercase tracking-wide text-blue-700">Современный учебник Vue.js 3</p>
-      <h1 class="text-2xl font-bold md:text-3xl">Раздел 16.1. Pinia: архитектура, плагины, persist</h1>
+      <h1 class="text-2xl font-bold md:text-3xl">Раздел 19. Pinia: архитектура, плагины, persist</h1>
       <p class="mt-3 text-slate-700">Разбираем, как строить Pinia для реального проекта: домены, плагины и надежное сохранение состояния.</p>
     </header>
 
     <section class="mb-6 rounded-2xl bg-white p-6 shadow-sm ring-1 ring-slate-200">
       <h2 class="mb-3 text-xl font-semibold">Цель урока</h2>
-      <p class="text-slate-700">Освоить ключевые идеи раздела и закрепить их через короткую пошаговую практику.</p>
+      <p class="text-slate-700">Научиться организовывать хранилища для реального проекта: делить состояние по смысловым блокам, расширять поведение и сохранять только нужные данные.</p>
     </section>
 
     <section class="mb-6 rounded-2xl bg-white p-6 shadow-sm ring-1 ring-slate-200">
@@ -157,14 +157,6 @@ const userName = computed(() => authStore.user?.name ?? '')</code></pre>
         <li>Проверь, что одно и то же состояние не дублируется в двух store.</li>
         <li>Подготовь короткий список "что хранить в store, а что локально в компоненте".</li>
       </ol>
-      <div class="mt-4 rounded-xl bg-amber-50 p-4 ring-1 ring-amber-200">
-        <h3 class="font-medium">Типичные ошибки</h3>
-        <ul class="mt-2 list-disc space-y-1 pl-6 text-sm text-slate-700">
-          <li>Один огромный store вместо доменной структуры.</li>
-          <li>Persist всех полей подряд, включая лишние данные.</li>
-          <li>Дублирование одного состояния в разных store.</li>
-        </ul>
-      </div>
     </section>
 
     <section class="mb-8 rounded-2xl bg-white p-6 shadow-sm ring-1 ring-slate-200">
@@ -193,7 +185,7 @@ const userName = computed(() => authStore.user?.name ?? '')</code></pre>
     <div class="w-full max-w-xl rounded-2xl bg-white p-6 shadow-xl ring-1 ring-slate-200">
       <div class="mb-4 flex items-start justify-between gap-4">
         <div>
-          <h2 class="text-xl font-semibold">Тест по разделу 16.1</h2>
+          <h2 class="text-xl font-semibold">Тест по разделу 19</h2>
           <p id="quiz-progress" class="mt-1 text-sm text-slate-600"></p>
         </div>
         <button id="close-quiz" type="button" class="rounded-md border border-slate-300 px-3 py-1.5 text-sm hover:bg-slate-100">Закрыть</button>
