@@ -6,6 +6,8 @@
   <link rel="icon" type="image/svg+xml" href="../logo.svg" />
   <title>Раздел 1 — Введение в Vue.js 3 и первый проект</title>
   <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+  <link rel="stylesheet" href="../assets/progress-tracker.css" />
+  <script src="../assets/progress-tracker.js" defer></script>
   <style>
     :root { color-scheme: dark; }
     body { background-color: #020617 !important; color: #e2e8f0 !important; }
@@ -108,7 +110,17 @@
           </ul>
         </div>
         <div class="rounded-xl bg-slate-50 p-4 ring-1 ring-slate-200">
-          <h3 class="mb-2 text-lg font-medium">4) Структура проекта: <code>main.js</code>, <code>App.vue</code>, <code>components</code></h3>
+          <h3 class="mb-2 text-lg font-medium">4) Как все связано: фреймворк, Node.js, фронтенд и бэкенд</h3>
+          <ul class="list-disc space-y-1 pl-6">
+            <li><strong>Фреймворк</strong> — это "каркас" приложения с готовыми правилами и инструментами. Vue дает структуру для интерфейса.</li>
+            <li><strong>Node.js</strong> нужен не для показа сайта пользователю, а для разработки: установить пакеты, запустить Vite, собрать проект.</li>
+            <li><strong>Фронтенд-сервер</strong> (Vite dev server) отдает HTML/CSS/JS в браузер во время разработки.</li>
+            <li><strong>Бэкенд-сервер</strong> отдает данные и бизнес-логику (например, список задач, авторизация, база данных).</li>
+            <li>Связка обычно такая: <code>Браузер → фронтенд (Vue) → API бэкенда → база данных</code>.</li>
+          </ul>
+        </div>
+        <div class="rounded-xl bg-slate-50 p-4 ring-1 ring-slate-200">
+          <h3 class="mb-2 text-lg font-medium">5) Структура проекта: <code>main.js</code>, <code>App.vue</code>, <code>components</code></h3>
           <ul class="list-disc space-y-1 pl-6">
             <li><code>main.js</code> — точка входа. Здесь приложение подключается к странице.</li>
             <li><code>App.vue</code> — корневой компонент, "главный экран".</li>
@@ -116,7 +128,7 @@
           </ul>
         </div>
         <div class="rounded-xl bg-slate-50 p-4 ring-1 ring-slate-200">
-          <h3 class="mb-2 text-lg font-medium">5) DevTools для Vue</h3>
+          <h3 class="mb-2 text-lg font-medium">6) DevTools для Vue</h3>
           <p>
             DevTools помогает видеть компоненты, их состояние и события.
             Это как "рентген" для интерфейса: сразу видно, что именно происходит.
