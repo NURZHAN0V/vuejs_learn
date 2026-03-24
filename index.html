@@ -55,7 +55,6 @@
           <h2 class="text-2xl font-semibold tracking-tight">Содержание курса</h2>
           <p class="mt-1 text-sm text-slate-600">Найдите нужную тему за пару секунд</p>
         </div>
-        <p id="searchStats" class="text-sm text-slate-500">Показано 29 из 29 уроков</p>
       </div>
 
       <label for="tocSearch" class="sr-only">Поиск по урокам</label>
@@ -137,9 +136,7 @@
   <script>
     const tocSearchInput = document.getElementById('tocSearch');
     const tocItems = Array.from(document.querySelectorAll('#tocList li'));
-    const searchStats = document.getElementById('searchStats');
     const noResults = document.getElementById('noResults');
-    const totalLessons = tocItems.length;
 
     function updateTocFilter() {
       const query = tocSearchInput.value.trim().toLowerCase();
@@ -152,7 +149,6 @@
         if (isVisible) visibleCount += 1;
       });
 
-      searchStats.textContent = `Показано ${visibleCount} из ${totalLessons} уроков`;
       noResults.classList.toggle('hidden', visibleCount > 0);
     }
 
