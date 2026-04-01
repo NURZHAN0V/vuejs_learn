@@ -98,16 +98,32 @@
       <div class="space-y-5">
         <article class="rounded-xl bg-slate-50 p-4 ring-1 ring-slate-200">
           <h3 class="font-medium">Шаг 1. Базовое состояние данных и статуса</h3>
-          <pre class="overflow-x-auto rounded-lg bg-slate-900 p-3 text-sm text-slate-100"><code class="language-javascript">import { ref } from 'vue'
+          <pre class="overflow-x-auto rounded-lg bg-slate-900 p-3 text-sm text-slate-100"><code class="language-html">&lt;script setup&gt;
+import { ref } from 'vue'
 
 const tasks = ref([])
 const status = ref('idle') // idle | loading | success | error
-const errorMessage = ref('')</code></pre>
+const errorMessage = ref('')
+&lt;/script&gt;
+
+&lt;template&gt;
+  &lt;p v-if="status === 'idle'"&gt;Нажми "Загрузить задачи"&lt;/p&gt;
+  &lt;p v-if="status === 'loading'"&gt;Загрузка...&lt;/p&gt;
+  &lt;p v-if="status === 'error'"&gt;Ошибка: {{ errorMessage }}&lt;/p&gt;
+&lt;/template&gt;</code></pre>
+          <p class="mt-2 text-sm text-slate-700">Статус отделен от данных, поэтому UI всегда показывает корректное состояние запроса.</p>
         </article>
 
         <article class="rounded-xl bg-slate-50 p-4 ring-1 ring-slate-200">
           <h3 class="font-medium">Шаг 2. Загрузка списка через fetch</h3>
-          <pre class="overflow-x-auto rounded-lg bg-slate-900 p-3 text-sm text-slate-100"><code class="language-javascript">const loadTasks = async () => {
+          <pre class="overflow-x-auto rounded-lg bg-slate-900 p-3 text-sm text-slate-100"><code class="language-html">&lt;script setup&gt;
+import { onMounted, ref } from 'vue'
+
+const tasks = ref([])
+const status = ref('idle')
+const errorMessage = ref('')
+
+const loadTasks = async () =&gt; {
   status.value = 'loading'
   errorMessage.value = ''
   try {
@@ -119,7 +135,17 @@ const errorMessage = ref('')</code></pre>
     status.value = 'error'
     errorMessage.value = e.message
   }
-}</code></pre>
+}
+
+onMounted(loadTasks)
+&lt;/script&gt;
+
+&lt;template&gt;
+  &lt;ul v-if="status === 'success'"&gt;
+    &lt;li v-for="task in tasks" :key="task.id"&gt;{{ task.title }}&lt;/li&gt;
+  &lt;/ul&gt;
+&lt;/template&gt;</code></pre>
+          <p class="mt-2 text-sm text-slate-700">Полный рабочий сценарий первой загрузки данных при открытии страницы.</p>
         </article>
 
         <article class="rounded-xl bg-slate-50 p-4 ring-1 ring-slate-200">
@@ -129,22 +155,30 @@ const errorMessage = ref('')</code></pre>
     await loadTasks()
     if (status.value === 'success') break
   }
-}</code></pre>
+}
+
+// в шаблоне:
+// &lt;button v-if="status === 'error'" @click="retryLoad()"&gt;Повторить&lt;/button&gt;</code></pre>
+          <p class="mt-2 text-sm text-slate-700">Полезно для временных сбоев сети: пользователь может быстро восстановить экран.</p>
         </article>
 
         <article class="rounded-xl bg-slate-50 p-4 ring-1 ring-slate-200">
           <h3 class="font-medium">Шаг 4. Отмена запроса (AbortController)</h3>
           <pre class="overflow-x-auto rounded-lg bg-slate-900 p-3 text-sm text-slate-100"><code class="language-javascript">let controller = null
+
 const searchTasks = async (q) => {
   if (controller) controller.abort()
   controller = new AbortController()
   try {
-    const res = await fetch(`/api/tasks?q=${encodeURIComponent(q)}`, { signal: controller.signal })
+    const res = await fetch(`/api/tasks?q=${encodeURIComponent(q)}`, {
+      signal: controller.signal
+    })
     tasks.value = await res.json()
   } catch (e) {
     if (e.name !== 'AbortError') errorMessage.value = e.message
   }
 }</code></pre>
+          <p class="mt-2 text-sm text-slate-700">Старые ответы не перетирают новые результаты при быстром вводе в поиск.</p>
         </article>
 
         <article class="rounded-xl bg-slate-50 p-4 ring-1 ring-slate-200">
@@ -159,12 +193,13 @@ const searchTasks = async (q) => {
       body: JSON.stringify({ title })
     })
     const saved = await res.json()
-    tasks.value = tasks.value.map(t => (t.id === temp.id ? saved : t))
-  } catch (e) {
-    tasks.value = tasks.value.filter(t => t.id !== temp.id)
+    tasks.value = tasks.value.map((t) => (t.id === temp.id ? saved : t))
+  } catch {
+    tasks.value = tasks.value.filter((t) => t.id !== temp.id)
     errorMessage.value = 'Не удалось создать задачу'
   }
 }</code></pre>
+          <p class="mt-2 text-sm text-slate-700">UI реагирует мгновенно, но при ошибке состояние корректно откатывается назад.</p>
         </article>
 
         <article class="rounded-xl bg-slate-50 p-4 ring-1 ring-slate-200">
@@ -179,10 +214,12 @@ watch(query, (value) => {
   timer = setTimeout(() => {
     searchTasks(value)
   }, 400)
+})
+
+watch(page, () => {
+  loadTasks()
 })</code></pre>
-          <p class="mt-2 text-sm text-slate-700">
-            Зачем шаг: не отправлять запрос на каждый символ и не перегружать API. Что изменится: поиск станет стабильнее, а риск гонок при быстром вводе снизится.
-          </p>
+          <p class="mt-2 text-sm text-slate-700">Debounce уменьшает нагрузку на API, а пагинация делает список управляемым на больших данных.</p>
         </article>
       </div>
     </section>

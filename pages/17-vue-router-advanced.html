@@ -95,44 +95,65 @@
       <div class="space-y-5">
         <article class="rounded-xl bg-slate-50 p-4 ring-1 ring-slate-200">
           <h3 class="font-medium">Шаг 1. Добавь nested routes</h3>
-          <pre class="overflow-x-auto rounded-lg bg-slate-900 p-3 text-sm text-slate-100"><code class="language-javascript">{
+          <pre class="overflow-x-auto rounded-lg bg-slate-900 p-3 text-sm text-slate-100"><code class="language-javascript">// router/index.js
+{
   path: '/account',
   component: () => import('../layouts/AccountLayout.vue'),
   children: [
     { path: '', redirect: '/account/profile' },
-    { path: 'profile', component: () => import('../views/ProfileView.vue') },
-    { path: 'settings', component: () => import('../views/SettingsView.vue') }
+    { path: 'profile', name: 'account-profile', component: () => import('../views/ProfileView.vue') },
+    { path: 'settings', name: 'account-settings', component: () => import('../views/SettingsView.vue') }
   ]
 }</code></pre>
-          <p class="mt-2 text-sm text-slate-700">Зачем шаг: так мы описываем структуру кабинета, а не плоский список страниц.</p>
+          <pre class="mt-3 overflow-x-auto rounded-lg bg-slate-900 p-3 text-sm text-slate-100"><code class="language-html">&lt;!-- AccountLayout.vue --&gt;
+&lt;template&gt;
+  &lt;nav&gt;
+    &lt;RouterLink to="/account/profile"&gt;Профиль&lt;/RouterLink&gt;
+    &lt;RouterLink to="/account/settings"&gt;Настройки&lt;/RouterLink&gt;
+  &lt;/nav&gt;
+  &lt;RouterView /&gt;
+&lt;/template&gt;</code></pre>
+          <p class="mt-2 text-sm text-slate-700">Так описывается структура кабинета как один раздел с дочерними экранами.</p>
         </article>
 
         <article class="rounded-xl bg-slate-50 p-4 ring-1 ring-slate-200">
           <h3 class="font-medium">Шаг 2. Добавь meta-флаг для защищенных страниц</h3>
-          <pre class="overflow-x-auto rounded-lg bg-slate-900 p-3 text-sm text-slate-100"><code class="language-javascript">{
+          <pre class="overflow-x-auto rounded-lg bg-slate-900 p-3 text-sm text-slate-100"><code class="language-javascript">// router/index.js
+{
   path: '/account',
   component: () => import('../layouts/AccountLayout.vue'),
   meta: { requiresAuth: true },
-  children: [/* ... */]
+  children: [/* profile/settings */]
 }</code></pre>
-          <p class="mt-2 text-sm text-slate-700">Что изменится: роутер будет знать, что доступ к разделу нужно проверять.</p>
+          <p class="mt-2 text-sm text-slate-700">Meta делает правило явным и позволяет централизованно проверять доступ.</p>
         </article>
 
         <article class="rounded-xl bg-slate-50 p-4 ring-1 ring-slate-200">
           <h3 class="font-medium">Шаг 3. Проверь доступ через global guard</h3>
-          <pre class="overflow-x-auto rounded-lg bg-slate-900 p-3 text-sm text-slate-100"><code class="language-javascript">router.beforeEach((to) => {
+          <pre class="overflow-x-auto rounded-lg bg-slate-900 p-3 text-sm text-slate-100"><code class="language-javascript">// router/index.js
+router.beforeEach((to) => {
   const isLoggedIn = Boolean(localStorage.getItem('access_token'))
 
   if (to.meta.requiresAuth && !isLoggedIn) {
     return { path: '/login', query: { redirect: to.fullPath } }
   }
 })</code></pre>
-          <p class="mt-2 text-sm text-slate-700">Что изменится: неавторизованного пользователя перекинет на вход.</p>
+          <pre class="mt-3 overflow-x-auto rounded-lg bg-slate-900 p-3 text-sm text-slate-100"><code class="language-javascript">// LoginView.vue
+import { useRoute, useRouter } from 'vue-router'
+const route = useRoute()
+const router = useRouter()
+
+const onLoginSuccess = () => {
+  const redirect = route.query.redirect || '/account/profile'
+  router.push(redirect)
+}</code></pre>
+          <p class="mt-2 text-sm text-slate-700">Неавторизованный пользователь уходит на логин и потом возвращается туда, куда шел.</p>
         </article>
 
         <article class="rounded-xl bg-slate-50 p-4 ring-1 ring-slate-200">
           <h3 class="font-medium">Шаг 4. Добавь beforeEnter для локального правила</h3>
-          <pre class="overflow-x-auto rounded-lg bg-slate-900 p-3 text-sm text-slate-100"><code class="language-javascript">{
+          <pre class="overflow-x-auto rounded-lg bg-slate-900 p-3 text-sm text-slate-100"><code class="language-javascript">// router/index.js
+{
   path: '/account/settings',
   component: () => import('../views/SettingsView.vue'),
   beforeEnter: () => {
@@ -140,7 +161,7 @@
     if (role !== 'admin') return '/account/profile'
   }
 }</code></pre>
-          <p class="mt-2 text-sm text-slate-700">Зачем шаг: отдельные страницы могут иметь более строгие правила доступа.</p>
+          <p class="mt-2 text-sm text-slate-700">Локальный guard подходит для точечных ограничений на конкретной странице.</p>
         </article>
 
         <article class="rounded-xl bg-slate-50 p-4 ring-1 ring-slate-200">
@@ -150,10 +171,11 @@
   routes,
   scrollBehavior(to, from, savedPosition) {
     if (savedPosition) return savedPosition
+    if (to.hash) return { el: to.hash, behavior: 'smooth' }
     return { top: 0 }
   }
 })</code></pre>
-          <p class="mt-2 text-sm text-slate-700">Что изменится: навигация станет предсказуемой, без "сломанной" прокрутки.</p>
+          <p class="mt-2 text-sm text-slate-700">Прокрутка становится предсказуемой: возврат позиции назад/вперед и поддержка якорей.</p>
         </article>
       </div>
     </section>

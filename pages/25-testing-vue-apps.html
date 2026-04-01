@@ -96,20 +96,33 @@
       <div class="space-y-5">
         <article class="rounded-xl bg-slate-50 p-4 ring-1 ring-slate-200">
           <h3 class="font-medium">Шаг 1. Определи приоритетные сценарии</h3>
-          <pre class="overflow-x-auto rounded-lg bg-slate-900 p-3 text-sm text-slate-100"><code class="language-text">Критичные сценарии:
+          <pre class="overflow-x-auto rounded-lg bg-slate-900 p-3 text-sm text-slate-100"><code class="language-text">Критичные сценарии todo-приложения:
 1) Добавление задачи
-2) Переключение статуса done
+2) Переключение done
 3) Удаление задачи
-4) Ошибка загрузки с API</code></pre>
+4) Ошибка загрузки и fallback UI
+
+Правило: чем выше бизнес-риск, тем раньше пишем тест.</code></pre>
+          <p class="mt-2 text-sm text-slate-700">Начинаем не с количества тестов, а с наиболее важных пользовательских путей.</p>
         </article>
 
         <article class="rounded-xl bg-slate-50 p-4 ring-1 ring-slate-200">
           <h3 class="font-medium">Шаг 2. Unit-тест composable</h3>
-          <pre class="overflow-x-auto rounded-lg bg-slate-900 p-3 text-sm text-slate-100"><code class="language-typescript">import { describe, it, expect } from 'vitest'
+          <pre class="overflow-x-auto rounded-lg bg-slate-900 p-3 text-sm text-slate-100"><code class="language-typescript">// composables/useCounter.ts
+import { ref } from 'vue'
+
+export function useCounter() {
+  const count = ref(0)
+  const inc = () => { count.value += 1 }
+  return { count, inc }
+}
+
+// composables/useCounter.spec.ts
+import { describe, it, expect } from 'vitest'
 import { useCounter } from './useCounter'
 
 describe('useCounter', () => {
-  it('увеличивает значение', () => {
+  it('увеличивает значение на 1', () => {
     const { count, inc } = useCounter()
     inc()
     expect(count.value).toBe(1)
@@ -119,26 +132,43 @@ describe('useCounter', () => {
 
         <article class="rounded-xl bg-slate-50 p-4 ring-1 ring-slate-200">
           <h3 class="font-medium">Шаг 3. Unit-тест Pinia store</h3>
-          <pre class="overflow-x-auto rounded-lg bg-slate-900 p-3 text-sm text-slate-100"><code class="language-typescript">import { setActivePinia, createPinia } from 'pinia'
+          <pre class="overflow-x-auto rounded-lg bg-slate-900 p-3 text-sm text-slate-100"><code class="language-typescript">// stores/todoStore.ts
+export const useTodoStore = defineStore('todo', () => {
+  const items = ref([])
+  function addTask(title: string) {
+    items.value.push({ id: Date.now(), title, done: false })
+  }
+  return { items, addTask }
+})
+
+// stores/todoStore.spec.ts
+import { beforeEach, expect, it } from 'vitest'
+import { createPinia, setActivePinia } from 'pinia'
 import { useTodoStore } from './todoStore'
 
 beforeEach(() => setActivePinia(createPinia()))
 
-it('добавляет задачу', () => {
+it('добавляет задачу в store', () => {
   const store = useTodoStore()
   store.addTask('Новая задача')
-  expect(store.items.length).toBe(1)
+  expect(store.items).toHaveLength(1)
+  expect(store.items[0].title).toBe('Новая задача')
 })</code></pre>
         </article>
 
         <article class="rounded-xl bg-slate-50 p-4 ring-1 ring-slate-200">
           <h3 class="font-medium">Шаг 4. Component test (Vue Test Utils)</h3>
-          <pre class="overflow-x-auto rounded-lg bg-slate-900 p-3 text-sm text-slate-100"><code class="language-typescript">import { mount } from '@vue/test-utils'
+          <pre class="overflow-x-auto rounded-lg bg-slate-900 p-3 text-sm text-slate-100"><code class="language-typescript">// TodoForm.vue (фрагмент)
+// &lt;input data-test="todo-input" v-model="title" /&gt;
+// &lt;button data-test="todo-submit"&gt;Добавить&lt;/button&gt;
+
+import { mount } from '@vue/test-utils'
+import { it, expect } from 'vitest'
 import TodoForm from './TodoForm.vue'
 
-it('отправляет событие submit с текстом', async () => {
+it('эмитит submit с введенным текстом', async () => {
   const wrapper = mount(TodoForm)
-  await wrapper.get('input').setValue('Купить молоко')
+  await wrapper.get('[data-test="todo-input"]').setValue('Купить молоко')
   await wrapper.get('form').trigger('submit.prevent')
 
   expect(wrapper.emitted('submit')?.[0]).toEqual(['Купить молоко'])
@@ -146,29 +176,42 @@ it('отправляет событие submit с текстом', async () => {
         </article>
 
         <article class="rounded-xl bg-slate-50 p-4 ring-1 ring-slate-200">
-          <h3 class="font-medium">Шаг 5. E2E-сценарий (концептуально)</h3>
-          <pre class="overflow-x-auto rounded-lg bg-slate-900 p-3 text-sm text-slate-100"><code class="language-typescript">test('пользователь добавляет задачу', async ({ page }) => {
+          <h3 class="font-medium">Шаг 5. E2E-сценарий (Playwright)</h3>
+          <pre class="overflow-x-auto rounded-lg bg-slate-900 p-3 text-sm text-slate-100"><code class="language-typescript">import { test, expect } from '@playwright/test'
+
+test('пользователь добавляет задачу', async ({ page }) => {
   await page.goto('/todos')
   await page.fill('[data-test=todo-input]', 'Задача E2E')
   await page.click('[data-test=todo-submit]')
   await expect(page.locator('text=Задача E2E')).toBeVisible()
 })</code></pre>
+          <p class="mt-2 text-sm text-slate-700">E2E подтверждает, что интеграция UI, роутов и состояния работает целиком.</p>
         </article>
 
         <article class="rounded-xl bg-slate-50 p-4 ring-1 ring-slate-200">
-          <h3 class="font-medium">Шаг 6. Моки API</h3>
-          <pre class="overflow-x-auto rounded-lg bg-slate-900 p-3 text-sm text-slate-100"><code class="language-typescript">vi.spyOn(global, 'fetch').mockResolvedValue({
-  ok: true,
-  json: async () => ([{ id: 1, title: 'Mock task' }])
-} as Response)</code></pre>
+          <h3 class="font-medium">Шаг 6. Моки API для стабильных тестов</h3>
+          <pre class="overflow-x-auto rounded-lg bg-slate-900 p-3 text-sm text-slate-100"><code class="language-typescript">import { vi, it, expect } from 'vitest'
+import { loadTodos } from './todoApi'
+
+it('возвращает список задач', async () => {
+  vi.spyOn(global, 'fetch').mockResolvedValue({
+    ok: true,
+    json: async () => [{ id: 1, title: 'Mock task' }]
+  } as Response)
+
+  const items = await loadTodos()
+  expect(items[0].title).toBe('Mock task')
+})</code></pre>
         </article>
 
         <article class="rounded-xl bg-slate-50 p-4 ring-1 ring-slate-200">
           <h3 class="font-medium">Шаг 7. Мини-стратегия тестов в команде</h3>
-          <pre class="overflow-x-auto rounded-lg bg-slate-900 p-3 text-sm text-slate-100"><code class="language-text">- Unit: бизнес-логика и вычисления
-- Component: поведение UI-компонентов
-- E2E: ключевые пользовательские пути
-- Не дублировать одинаковые проверки на всех уровнях</code></pre>
+          <pre class="overflow-x-auto rounded-lg bg-slate-900 p-3 text-sm text-slate-100"><code class="language-text">- Unit: бизнес-правила и вычисления (быстро, дешево)
+- Component: поведение компонентов (формы, emit, условный UI)
+- E2E: 3-5 критичных пользовательских путей
+- Не дублируем один и тот же кейс на всех слоях
+- Каждый баг из продакшена добавляем в regression-набор</code></pre>
+          <p class="mt-2 text-sm text-slate-700">Такая стратегия удерживает баланс между скоростью CI и уверенностью в релизе.</p>
         </article>
       </div>
     </section>

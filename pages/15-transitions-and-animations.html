@@ -118,26 +118,43 @@
       <div class="space-y-5">
         <article class="rounded-xl bg-slate-50 p-4 ring-1 ring-slate-200">
           <h3 class="mb-2 text-lg font-medium">Шаг 1. Появление/скрытие блока через &lt;Transition&gt;</h3>
-          <pre class="overflow-x-auto rounded-lg bg-slate-900 p-3 text-sm text-slate-100"><code class="language-html">&lt;button @click="isOpen = !isOpen"&gt;Показать детали&lt;/button&gt;
+          <pre class="overflow-x-auto rounded-lg bg-slate-900 p-3 text-sm text-slate-100"><code class="language-html">&lt;script setup&gt;
+import { ref } from 'vue'
+const isOpen = ref(false)
+&lt;/script&gt;
 
-&lt;Transition name="fade"&gt;
-  &lt;div v-if="isOpen"&gt;Раскрывающийся блок&lt;/div&gt;
-&lt;/Transition&gt;</code></pre>
+&lt;template&gt;
+  &lt;button @click="isOpen = !isOpen"&gt;Показать детали&lt;/button&gt;
+  &lt;Transition name="fade"&gt;
+    &lt;div v-if="isOpen"&gt;Раскрывающийся блок&lt;/div&gt;
+  &lt;/Transition&gt;
+&lt;/template&gt;</code></pre>
           <pre class="mt-3 overflow-x-auto rounded-lg bg-slate-900 p-3 text-sm text-slate-100"><code class="language-css">.fade-enter-active, .fade-leave-active {
   transition: opacity 0.25s ease;
 }
 .fade-enter-from, .fade-leave-to {
   opacity: 0;
 }</code></pre>
+          <p class="mt-2 text-sm text-slate-700">Минимальный рабочий кейс для одного блока с плавным появлением и скрытием.</p>
         </article>
 
         <article class="rounded-xl bg-slate-50 p-4 ring-1 ring-slate-200">
           <h3 class="mb-2 text-lg font-medium">Шаг 2. Анимированный список через &lt;TransitionGroup&gt;</h3>
-          <pre class="overflow-x-auto rounded-lg bg-slate-900 p-3 text-sm text-slate-100"><code class="language-html">&lt;TransitionGroup name="list" tag="ul"&gt;
-  &lt;li v-for="task in tasks" :key="task.id"&gt;
-    {{ task.title }}
-  &lt;/li&gt;
-&lt;/TransitionGroup&gt;</code></pre>
+          <pre class="overflow-x-auto rounded-lg bg-slate-900 p-3 text-sm text-slate-100"><code class="language-html">&lt;script setup&gt;
+import { ref } from 'vue'
+const tasks = ref([
+  { id: 1, title: 'Сделать форму' },
+  { id: 2, title: 'Добавить API' }
+])
+&lt;/script&gt;
+
+&lt;template&gt;
+  &lt;TransitionGroup name="list" tag="ul"&gt;
+    &lt;li v-for="task in tasks" :key="task.id"&gt;
+      {{ task.title }}
+    &lt;/li&gt;
+  &lt;/TransitionGroup&gt;
+&lt;/template&gt;</code></pre>
           <pre class="mt-3 overflow-x-auto rounded-lg bg-slate-900 p-3 text-sm text-slate-100"><code class="language-css">.list-enter-active, .list-leave-active {
   transition: all 0.2s ease;
 }
@@ -145,37 +162,46 @@
   opacity: 0;
   transform: translateY(8px);
 }</code></pre>
+          <p class="mt-2 text-sm text-slate-700">Подходит для реального todo-сценария: добавление и удаление элементов выглядит аккуратно.</p>
         </article>
 
         <article class="rounded-xl bg-slate-50 p-4 ring-1 ring-slate-200">
           <h3 class="mb-2 text-lg font-medium">Шаг 3. Переходы маршрутов (базовый пример)</h3>
-          <pre class="overflow-x-auto rounded-lg bg-slate-900 p-3 text-sm text-slate-100"><code class="language-html">&lt;RouterView v-slot="{ Component }"&gt;
-  &lt;Transition name="page" mode="out-in"&gt;
-    &lt;component :is="Component" /&gt;
-  &lt;/Transition&gt;
-&lt;/RouterView&gt;</code></pre>
+          <pre class="overflow-x-auto rounded-lg bg-slate-900 p-3 text-sm text-slate-100"><code class="language-html">&lt;template&gt;
+  &lt;RouterView v-slot="{ Component }"&gt;
+    &lt;Transition name="page" mode="out-in"&gt;
+      &lt;component :is="Component" /&gt;
+    &lt;/Transition&gt;
+  &lt;/RouterView&gt;
+&lt;/template&gt;</code></pre>
+          <p class="mt-2 text-sm text-slate-700">Маршрут меняется плавно, и пользователю легче считать смену экрана.</p>
         </article>
 
         <article class="rounded-xl bg-slate-50 p-4 ring-1 ring-slate-200">
           <h3 class="mb-2 text-lg font-medium">Шаг 4. JavaScript hooks в переходе</h3>
-          <pre class="overflow-x-auto rounded-lg bg-slate-900 p-3 text-sm text-slate-100"><code class="language-html">&lt;Transition
-  @before-enter="beforeEnter"
-  @enter="enter"
-  @leave="leave"
-&gt;
-  &lt;div v-if="visible"&gt;Блок с JS-анимацией&lt;/div&gt;
-&lt;/Transition&gt;</code></pre>
-          <pre class="mt-3 overflow-x-auto rounded-lg bg-slate-900 p-3 text-sm text-slate-100"><code class="language-javascript">const beforeEnter = (el) => { el.style.opacity = 0 }
-const enter = (el, done) => {
+          <pre class="overflow-x-auto rounded-lg bg-slate-900 p-3 text-sm text-slate-100"><code class="language-html">&lt;script setup&gt;
+import { ref } from 'vue'
+const visible = ref(true)
+
+const beforeEnter = (el) =&gt; { el.style.opacity = 0 }
+const enter = (el, done) =&gt; {
   el.style.transition = 'opacity .2s'
   el.style.opacity = 1
   setTimeout(done, 200)
 }
-const leave = (el, done) => {
+const leave = (el, done) =&gt; {
   el.style.transition = 'opacity .2s'
   el.style.opacity = 0
   setTimeout(done, 200)
-}</code></pre>
+}
+&lt;/script&gt;
+
+&lt;template&gt;
+  &lt;Transition @before-enter="beforeEnter" @enter="enter" @leave="leave"&gt;
+    &lt;div v-if="visible"&gt;Блок с JS-анимацией&lt;/div&gt;
+  &lt;/Transition&gt;
+&lt;/template&gt;</code></pre>
+          <p class="mt-2 text-sm text-slate-700">JS hooks полезны, когда одной CSS-анимации недостаточно для нужной логики.</p>
         </article>
 
         <article class="rounded-xl bg-slate-50 p-4 ring-1 ring-slate-200">
@@ -191,6 +217,7 @@ const leave = (el, done) => {
     transition: none;
   }
 }</code></pre>
+          <p class="mt-2 text-sm text-slate-700">Итоговое правило для продакшна: коротко, понятно, с учетом доступности.</p>
         </article>
       </div>
     </section>

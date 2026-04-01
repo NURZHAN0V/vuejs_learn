@@ -103,8 +103,9 @@ const increment = () => count.value++
 &lt;/script&gt;
 
 &lt;template&gt;
-  &lt;button @click="increment"&gt;{{ count }}&lt;/button&gt;
+  &lt;button @click="increment"&gt;Счетчик: {{ count }}&lt;/button&gt;
 &lt;/template&gt;</code></pre>
+          <p class="mt-2 text-sm text-slate-700">Минимальный runnable-компонент: без return и лишнего шаблонного кода.</p>
         </article>
 
         <article class="rounded-xl bg-slate-50 p-4 ring-1 ring-slate-200">
@@ -120,40 +121,70 @@ const emit = defineEmits(['save'])
   &lt;h3&gt;{{ props.title }}&lt;/h3&gt;
   &lt;button @click="emit('save')"&gt;Сохранить&lt;/button&gt;
 &lt;/template&gt;</code></pre>
+          <p class="mt-2 text-sm text-slate-700">Контракт компонента сразу виден: что принимает на вход и какие события отправляет.</p>
         </article>
 
         <article class="rounded-xl bg-slate-50 p-4 ring-1 ring-slate-200">
           <h3 class="font-medium">Шаг 3. defineExpose и defineOptions</h3>
-          <pre class="overflow-x-auto rounded-lg bg-slate-900 p-3 text-sm text-slate-100"><code class="language-html">&lt;script setup&gt;
+          <pre class="overflow-x-auto rounded-lg bg-slate-900 p-3 text-sm text-slate-100"><code class="language-html">&lt;!-- Child: ProfileEditor.vue --&gt;
+&lt;script setup&gt;
 import { ref } from 'vue'
 defineOptions({ name: 'ProfileEditor' })
+
 const resetCount = ref(0)
-const reset = () => { resetCount.value++ }
+const reset = () => {
+  resetCount.value++
+}
+
 defineExpose({ reset })
 &lt;/script&gt;</code></pre>
-          <p class="mt-2 text-sm text-slate-700">Родитель сможет вызвать метод <code>reset()</code> через ref к дочернему компоненту.</p>
+          <pre class="mt-3 overflow-x-auto rounded-lg bg-slate-900 p-3 text-sm text-slate-100"><code class="language-html">&lt;!-- Parent.vue --&gt;
+&lt;script setup&gt;
+import { ref } from 'vue'
+import ProfileEditor from './ProfileEditor.vue'
+
+const editorRef = ref(null)
+&lt;/script&gt;
+
+&lt;template&gt;
+  &lt;ProfileEditor ref="editorRef" /&gt;
+  &lt;button @click="editorRef?.reset()"&gt;Сбросить редактор&lt;/button&gt;
+&lt;/template&gt;</code></pre>
+          <p class="mt-2 text-sm text-slate-700">Родитель получает только тот API ребенка, который явно разрешен через `defineExpose`.</p>
         </article>
 
         <article class="rounded-xl bg-slate-50 p-4 ring-1 ring-slate-200">
           <h3 class="font-medium">Шаг 4. defineModel для v-model</h3>
-          <pre class="overflow-x-auto rounded-lg bg-slate-900 p-3 text-sm text-slate-100"><code class="language-html">&lt;script setup&gt;
+          <pre class="overflow-x-auto rounded-lg bg-slate-900 p-3 text-sm text-slate-100"><code class="language-html">&lt;!-- SmartInput.vue --&gt;
+&lt;script setup&gt;
 const model = defineModel()
 &lt;/script&gt;
 
 &lt;template&gt;
   &lt;input v-model="model" /&gt;
 &lt;/template&gt;</code></pre>
-          <pre class="mt-3 overflow-x-auto rounded-lg bg-slate-900 p-3 text-sm text-slate-100"><code class="language-html">&lt;!-- Parent --&gt;
+          <pre class="mt-3 overflow-x-auto rounded-lg bg-slate-900 p-3 text-sm text-slate-100"><code class="language-html">&lt;!-- Parent.vue --&gt;
 &lt;SmartInput v-model="form.name" /&gt;</code></pre>
+          <p class="mt-2 text-sm text-slate-700">Самый короткий и читаемый способ реализовать двустороннюю связь в дочернем компоненте.</p>
         </article>
 
         <article class="rounded-xl bg-slate-50 p-4 ring-1 ring-slate-200">
           <h3 class="font-medium">Шаг 5. Несколько моделей в одном компоненте</h3>
-          <pre class="overflow-x-auto rounded-lg bg-slate-900 p-3 text-sm text-slate-100"><code class="language-html">&lt;script setup&gt;
+          <pre class="overflow-x-auto rounded-lg bg-slate-900 p-3 text-sm text-slate-100"><code class="language-html">&lt;!-- TodoEditor.vue --&gt;
+&lt;script setup&gt;
 const title = defineModel('title')
 const done = defineModel('done')
-&lt;/script&gt;</code></pre>
+&lt;/script&gt;
+
+&lt;template&gt;
+  &lt;input v-model="title" placeholder="Название задачи" /&gt;
+  &lt;label&gt;
+    &lt;input v-model="done" type="checkbox" /&gt;
+    Выполнено
+  &lt;/label&gt;
+&lt;/template&gt;</code></pre>
           <pre class="mt-3 overflow-x-auto rounded-lg bg-slate-900 p-3 text-sm text-slate-100"><code class="language-html">&lt;TodoEditor v-model:title="draftTitle" v-model:done="draftDone" /&gt;</code></pre>
+          <p class="mt-2 text-sm text-slate-700">Удобно для форм и редакторов, где нужно синхронизировать сразу несколько полей.</p>
         </article>
 
         <article class="rounded-xl bg-slate-50 p-4 ring-1 ring-slate-200">
@@ -166,6 +197,12 @@ defineSlots()
   &lt;header&gt;&lt;slot name="header" /&gt;&lt;/header&gt;
   &lt;main&gt;&lt;slot /&gt;&lt;/main&gt;
 &lt;/template&gt;</code></pre>
+          <pre class="mt-3 overflow-x-auto rounded-lg bg-slate-900 p-3 text-sm text-slate-100"><code class="language-html">&lt;!-- Parent.vue --&gt;
+&lt;BasePanel&gt;
+  &lt;template #header&gt;Заголовок панели&lt;/template&gt;
+  Контент панели
+&lt;/BasePanel&gt;</code></pre>
+          <p class="mt-2 text-sm text-slate-700">Слоты остаются гибкими, но структура компонента при этом предсказуема.</p>
         </article>
       </div>
     </section>

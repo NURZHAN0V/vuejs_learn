@@ -119,76 +119,190 @@
         <article class="rounded-xl bg-slate-50 p-4 ring-1 ring-slate-200">
           <h3 class="mb-2 text-lg font-medium">Шаг 1. Простой клик по кнопке</h3>
           <pre class="overflow-x-auto rounded-lg bg-slate-900 p-3 text-sm text-slate-100"><code class="language-html">&lt;template&gt;
-  &lt;button @click="increment"&gt;+1&lt;/button&gt;
-  &lt;p&gt;Счет: {{ count }}&lt;/p&gt;
+  &lt;section class="counter-card"&gt;
+    &lt;h2&gt;Счетчик действий&lt;/h2&gt;
+    &lt;p&gt;Счет: {{ count }}&lt;/p&gt;
+    &lt;button @click="increment"&gt;+1&lt;/button&gt;
+  &lt;/section&gt;
 &lt;/template&gt;
 
 &lt;script setup&gt;
 import { ref } from 'vue'
+
 const count = ref(0)
+
 const increment = () => {
   count.value++
 }
 &lt;/script&gt;</code></pre>
+          <p class="mt-2 text-sm text-slate-700">Базовый рабочий пример: клик меняет реактивное состояние и сразу обновляет интерфейс.</p>
         </article>
 
         <article class="rounded-xl bg-slate-50 p-4 ring-1 ring-slate-200">
           <h3 class="mb-2 text-lg font-medium">Шаг 2. Добавь кнопку сброса и аргументы</h3>
-          <pre class="overflow-x-auto rounded-lg bg-slate-900 p-3 text-sm text-slate-100"><code class="language-html">&lt;button @click="changeBy(5)"&gt;+5&lt;/button&gt;
-&lt;button @click="reset"&gt;Сброс&lt;/button&gt;
+          <pre class="overflow-x-auto rounded-lg bg-slate-900 p-3 text-sm text-slate-100"><code class="language-html">&lt;template&gt;
+  &lt;section class="counter-card"&gt;
+    &lt;p&gt;Счет: {{ count }}&lt;/p&gt;
+    &lt;div class="actions"&gt;
+      &lt;button @click="increment"&gt;+1&lt;/button&gt;
+      &lt;button @click="changeBy(5)"&gt;+5&lt;/button&gt;
+      &lt;button @click="changeBy(-1)"&gt;-1&lt;/button&gt;
+      &lt;button @click="reset"&gt;Сброс&lt;/button&gt;
+    &lt;/div&gt;
+  &lt;/section&gt;
+&lt;/template&gt;
 
 &lt;script setup&gt;
+import { ref } from 'vue'
+
+const count = ref(0)
+
+const increment = () =&gt; {
+  count.value++
+}
+
 const changeBy = (step) =&gt; {
   count.value += step
 }
+
 const reset = () =&gt; {
   count.value = 0
 }
 &lt;/script&gt;</code></pre>
+          <p class="mt-2 text-sm text-slate-700">Здесь видно практический смысл аргументов: один метод <code>changeBy</code> покрывает разные кнопки.</p>
         </article>
 
         <article class="rounded-xl bg-slate-50 p-4 ring-1 ring-slate-200">
           <h3 class="mb-2 text-lg font-medium">Шаг 3. Горячие клавиши</h3>
-          <pre class="overflow-x-auto rounded-lg bg-slate-900 p-3 text-sm text-slate-100"><code class="language-html">&lt;input
-  placeholder="Нажми Enter для +1, Esc для сброса"
-  @keyup.enter="increment"
-  @keyup.esc="reset"
-/&gt;</code></pre>
+          <pre class="overflow-x-auto rounded-lg bg-slate-900 p-3 text-sm text-slate-100"><code class="language-html">&lt;template&gt;
+  &lt;section class="counter-card"&gt;
+    &lt;p&gt;Счет: {{ count }}&lt;/p&gt;
+    &lt;input
+      v-model="note"
+      placeholder="Нажми Enter для +1, Esc для сброса"
+      @keyup.enter="increment"
+      @keyup.esc="reset"
+    /&gt;
+    &lt;p&gt;Черновик: {{ note }}&lt;/p&gt;
+  &lt;/section&gt;
+&lt;/template&gt;
+
+&lt;script setup&gt;
+import { ref } from 'vue'
+
+const count = ref(0)
+const note = ref('')
+
+const increment = () =&gt; {
+  count.value++
+}
+
+const reset = () =&gt; {
+  count.value = 0
+  note.value = ''
+}
+&lt;/script&gt;</code></pre>
+          <p class="mt-2 text-sm text-slate-700">Горячие клавиши работают в реальном контексте поля ввода: Enter увеличивает счет, Esc очищает состояние.</p>
         </article>
 
         <article class="rounded-xl bg-slate-50 p-4 ring-1 ring-slate-200">
           <h3 class="mb-2 text-lg font-medium">Шаг 4. Модификаторы событий</h3>
-          <pre class="overflow-x-auto rounded-lg bg-slate-900 p-3 text-sm text-slate-100"><code class="language-html">&lt;form @submit.prevent="save"&gt;
-  &lt;button type="submit"&gt;Сохранить&lt;/button&gt;
-&lt;/form&gt;
+          <pre class="overflow-x-auto rounded-lg bg-slate-900 p-3 text-sm text-slate-100"><code class="language-html">&lt;template&gt;
+  &lt;section class="counter-card"&gt;
+    &lt;form @submit.prevent="saveStep"&gt;
+      &lt;label&gt;Шаг изменения&lt;/label&gt;
+      &lt;input v-model.number="step" type="number" min="1" /&gt;
+      &lt;button type="submit"&gt;Сохранить шаг&lt;/button&gt;
+    &lt;/form&gt;
 
-&lt;div @click="outer"&gt;
-  &lt;button @click.stop="inner"&gt;Не всплывает наверх&lt;/button&gt;
-&lt;/div&gt;
+    &lt;div class="panel" @click="log('Нажат контейнер')"&gt;
+      &lt;button @click.stop="increment"&gt;+{{ step }} без всплытия&lt;/button&gt;
+    &lt;/div&gt;
 
-&lt;button @click.once="showOnce"&gt;Сработает один раз&lt;/button&gt;
-&lt;div @click.self="onBackdrop"&gt;...&lt;/div&gt;</code></pre>
+    &lt;button @click.once="showHint"&gt;Показать подсказку один раз&lt;/button&gt;
+    &lt;p v-if="hint"&gt;{{ hint }}&lt;/p&gt;
+  &lt;/section&gt;
+&lt;/template&gt;
+
+&lt;script setup&gt;
+import { ref } from 'vue'
+
+const count = ref(0)
+const step = ref(1)
+const hint = ref('')
+
+const increment = () =&gt; {
+  count.value += step.value
+}
+
+const saveStep = () =&gt; {
+  console.log('Новый шаг сохранен:', step.value)
+}
+
+const showHint = () =&gt; {
+  hint.value = 'Кнопка с .once сработает только один раз'
+}
+
+const log = (text) =&gt; {
+  console.log(text)
+}
+&lt;/script&gt;</code></pre>
+          <p class="mt-2 text-sm text-slate-700">Так проще понять модификаторы вживую: <code>.prevent</code>, <code>.stop</code> и <code>.once</code> в одном рабочем сценарии.</p>
         </article>
 
         <article class="rounded-xl bg-slate-50 p-4 ring-1 ring-slate-200">
           <h3 class="mb-2 text-lg font-medium">Шаг 5. Полный пример счетчика</h3>
           <pre class="overflow-x-auto rounded-lg bg-slate-900 p-3 text-sm text-slate-100"><code class="language-html">&lt;template&gt;
-  &lt;div class="space-y-2"&gt;
+  &lt;section class="counter-card"&gt;
+    &lt;h2&gt;Счетчик с хоткеями&lt;/h2&gt;
     &lt;p&gt;Счет: {{ count }}&lt;/p&gt;
-    &lt;button @click="increment"&gt;+1&lt;/button&gt;
-    &lt;button @click="changeBy(5)"&gt;+5&lt;/button&gt;
-    &lt;button @click="reset"&gt;Сброс&lt;/button&gt;
-    &lt;input @keyup.enter="increment" @keyup.esc="reset" /&gt;
-  &lt;/div&gt;
+
+    &lt;div class="actions"&gt;
+      &lt;button @click="increment"&gt;+1&lt;/button&gt;
+      &lt;button @click="changeBy(5)"&gt;+5&lt;/button&gt;
+      &lt;button @click="reset"&gt;Сброс&lt;/button&gt;
+    &lt;/div&gt;
+
+    &lt;input
+      v-model="message"
+      placeholder="Enter: +1, Esc: сброс"
+      @keyup.enter="increment"
+      @keyup.esc="reset"
+    /&gt;
+
+    &lt;form @submit.prevent="submitMessage"&gt;
+      &lt;button type="submit"&gt;Отправить заметку&lt;/button&gt;
+    &lt;/form&gt;
+
+    &lt;p v-if="lastSubmitted"&gt;Последняя заметка: {{ lastSubmitted }}&lt;/p&gt;
+  &lt;/section&gt;
 &lt;/template&gt;
 
 &lt;script setup&gt;
 import { ref } from 'vue'
+
 const count = ref(0)
-const increment = () =&gt; count.value++
-const changeBy = (step) =&gt; (count.value += step)
-const reset = () =&gt; (count.value = 0)
+const message = ref('')
+const lastSubmitted = ref('')
+
+const increment = () =&gt; {
+  count.value++
+}
+
+const changeBy = (step) =&gt; {
+  count.value += step
+}
+
+const reset = () =&gt; {
+  count.value = 0
+  message.value = ''
+}
+
+const submitMessage = () =&gt; {
+  lastSubmitted.value = message.value.trim()
+}
 &lt;/script&gt;</code></pre>
+          <p class="mt-2 text-sm text-slate-700">Итоговый сценарий объединяет клики, аргументы, форму и клавиши в одном мини-компоненте.</p>
         </article>
       </div>
     </section>

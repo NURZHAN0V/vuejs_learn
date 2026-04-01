@@ -129,72 +129,198 @@
       <div class="space-y-5">
         <article class="rounded-xl bg-slate-50 p-4 ring-1 ring-slate-200">
           <h3 class="mb-2 text-lg font-medium">Шаг 1. Состояние корзины через reactive</h3>
-          <pre class="overflow-x-auto rounded-lg bg-slate-900 p-3 text-sm text-slate-100"><code class="language-javascript">import { reactive } from 'vue'
+          <pre class="overflow-x-auto rounded-lg bg-slate-900 p-3 text-sm text-slate-100"><code class="language-html">&lt;template&gt;
+  &lt;section class="cart-card"&gt;
+    &lt;h2&gt;Корзина&lt;/h2&gt;
+    &lt;ul&gt;
+      &lt;li v-for="item in cart.items" :key="item.id"&gt;
+        {{ item.title }} — {{ item.price }} ₽ x {{ item.qty }}
+      &lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/section&gt;
+&lt;/template&gt;
+
+&lt;script setup&gt;
+import { reactive } from 'vue'
 
 const cart = reactive({
   items: [
     { id: 1, title: 'Ноутбук', price: 90000, qty: 1 },
     { id: 2, title: 'Мышь', price: 2500, qty: 2 }
   ]
-})</code></pre>
-          <p class="mt-2 text-sm text-slate-700">Здесь объект с несколькими полями, поэтому <code>reactive</code> подходит идеально.</p>
+})
+&lt;/script&gt;</code></pre>
+          <p class="mt-2 text-sm text-slate-700">Полный стартовый пример: состояние уже связано с шаблоном и сразу видно, как работает <code>reactive</code>.</p>
         </article>
 
         <article class="rounded-xl bg-slate-50 p-4 ring-1 ring-slate-200">
           <h3 class="mb-2 text-lg font-medium">Шаг 2. Отдельные значения через ref</h3>
-          <pre class="overflow-x-auto rounded-lg bg-slate-900 p-3 text-sm text-slate-100"><code class="language-javascript">import { ref } from 'vue'
+          <pre class="overflow-x-auto rounded-lg bg-slate-900 p-3 text-sm text-slate-100"><code class="language-html">&lt;template&gt;
+  &lt;section class="cart-card"&gt;
+    &lt;p&gt;Промокод (₽): {{ promo }}&lt;/p&gt;
+    &lt;p&gt;Доставка (₽): {{ delivery }}&lt;/p&gt;
+    &lt;button @click="promo = 700"&gt;Применить скидку 700&lt;/button&gt;
+    &lt;button @click="delivery = 0"&gt;Сделать доставку бесплатной&lt;/button&gt;
+  &lt;/section&gt;
+&lt;/template&gt;
+
+&lt;script setup&gt;
+import { ref } from 'vue'
 
 const promo = ref(0)
-const delivery = ref(500)</code></pre>
-          <p class="mt-2 text-sm text-slate-700">Отдельные параметры корзины проще хранить в <code>ref</code>.</p>
+const delivery = ref(500)
+&lt;/script&gt;</code></pre>
+          <p class="mt-2 text-sm text-slate-700">Отдельные независимые параметры удобнее и нагляднее хранить в отдельных <code>ref</code>.</p>
         </article>
 
         <article class="rounded-xl bg-slate-50 p-4 ring-1 ring-slate-200">
           <h3 class="mb-2 text-lg font-medium">Шаг 3. Итоговая сумма через computed</h3>
-          <pre class="overflow-x-auto rounded-lg bg-slate-900 p-3 text-sm text-slate-100"><code class="language-javascript">import { computed } from 'vue'
+          <pre class="overflow-x-auto rounded-lg bg-slate-900 p-3 text-sm text-slate-100"><code class="language-html">&lt;template&gt;
+  &lt;section class="cart-card"&gt;
+    &lt;p&gt;Подытог: {{ subTotal }} ₽&lt;/p&gt;
+    &lt;p&gt;Скидка: -{{ promo }} ₽&lt;/p&gt;
+    &lt;p&gt;Доставка: +{{ delivery }} ₽&lt;/p&gt;
+    &lt;p&gt;&lt;strong&gt;Итого: {{ total }} ₽&lt;/strong&gt;&lt;/p&gt;
+  &lt;/section&gt;
+&lt;/template&gt;
 
-const subTotal = computed(() =>
-  cart.items.reduce((sum, item) => sum + item.price * item.qty, 0)
+&lt;script setup&gt;
+import { computed, reactive, ref } from 'vue'
+
+const cart = reactive({
+  items: [
+    { id: 1, title: 'Ноутбук', price: 90000, qty: 1 },
+    { id: 2, title: 'Мышь', price: 2500, qty: 2 }
+  ]
+})
+
+const promo = ref(0)
+const delivery = ref(500)
+
+const subTotal = computed(() =&gt;
+  cart.items.reduce((sum, item) =&gt; sum + item.price * item.qty, 0)
 )
 
-const total = computed(() => subTotal.value - promo.value + delivery.value)</code></pre>
-          <p class="mt-2 text-sm text-slate-700">Сумма пересчитается сама, когда изменится количество, скидка или доставка.</p>
+const total = computed(() =&gt; subTotal.value - promo.value + delivery.value)
+&lt;/script&gt;</code></pre>
+          <p class="mt-2 text-sm text-slate-700">Теперь интерфейс пересчитывается автоматически и без ручных вызовов функций.</p>
         </article>
 
         <article class="rounded-xl bg-slate-50 p-4 ring-1 ring-slate-200">
           <h3 class="mb-2 text-lg font-medium">Шаг 4. Изменение количества</h3>
-          <pre class="overflow-x-auto rounded-lg bg-slate-900 p-3 text-sm text-slate-100"><code class="language-javascript">const increaseQty = (id) => {
-  const product = cart.items.find((item) => item.id === id)
+          <pre class="overflow-x-auto rounded-lg bg-slate-900 p-3 text-sm text-slate-100"><code class="language-html">&lt;template&gt;
+  &lt;section class="cart-card"&gt;
+    &lt;ul&gt;
+      &lt;li v-for="item in cart.items" :key="item.id"&gt;
+        {{ item.title }} — {{ item.qty }} шт.
+        &lt;button @click="decreaseQty(item.id)"&gt;-&lt;/button&gt;
+        &lt;button @click="increaseQty(item.id)"&gt;+&lt;/button&gt;
+      &lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/section&gt;
+&lt;/template&gt;
+
+&lt;script setup&gt;
+import { reactive } from 'vue'
+
+const cart = reactive({
+  items: [
+    { id: 1, title: 'Ноутбук', price: 90000, qty: 1 },
+    { id: 2, title: 'Мышь', price: 2500, qty: 2 }
+  ]
+})
+
+const increaseQty = (id) =&gt; {
+  const product = cart.items.find((item) =&gt; item.id === id)
   if (product) product.qty += 1
 }
 
-const decreaseQty = (id) => {
-  const product = cart.items.find((item) => item.id === id)
+const decreaseQty = (id) =&gt; {
+  const product = cart.items.find((item) =&gt; item.id === id)
   if (product && product.qty > 1) product.qty -= 1
-}</code></pre>
+}
+&lt;/script&gt;</code></pre>
+          <p class="mt-2 text-sm text-slate-700">В этом шаге уже рабочая CRUD-логика количества, которую обычно и пишут в реальном проекте.</p>
         </article>
 
         <article class="rounded-xl bg-slate-50 p-4 ring-1 ring-slate-200">
           <h3 class="mb-2 text-lg font-medium">Шаг 5. readonly для "только чтение"</h3>
-          <pre class="overflow-x-auto rounded-lg bg-slate-900 p-3 text-sm text-slate-100"><code class="language-javascript">import { readonly } from 'vue'
+          <pre class="overflow-x-auto rounded-lg bg-slate-900 p-3 text-sm text-slate-100"><code class="language-html">&lt;template&gt;
+  &lt;section class="cart-card"&gt;
+    &lt;p&gt;Товаров в публичной корзине: {{ publicCart.items.length }}&lt;/p&gt;
+    &lt;button @click="addItem"&gt;Добавить товар во внутреннюю корзину&lt;/button&gt;
+  &lt;/section&gt;
+&lt;/template&gt;
+
+&lt;script setup&gt;
+import { reactive, readonly } from 'vue'
+
+const cart = reactive({
+  items: [{ id: 1, title: 'Ноутбук', price: 90000, qty: 1 }]
+})
 
 const publicCart = readonly(cart)
-// publicCart.items.push(...) // так делать нельзя: объект защищен</code></pre>
-          <p class="mt-2 text-sm text-slate-700">Это помогает избежать случайных мутаций из другого места приложения.</p>
+
+const addItem = () =&gt; {
+  cart.items.push({ id: Date.now(), title: 'Коврик', price: 1000, qty: 1 })
+}
+
+// publicCart.items.push(...) // нельзя: это readonly-представление
+&lt;/script&gt;</code></pre>
+          <p class="mt-2 text-sm text-slate-700"><code>readonly</code> полезен, когда компонент должен только читать состояние, но не менять его напрямую.</p>
         </article>
 
         <article class="rounded-xl bg-slate-50 p-4 ring-1 ring-slate-200">
           <h3 class="mb-2 text-lg font-medium">Шаг 6. Шаблон корзины</h3>
-          <pre class="overflow-x-auto rounded-lg bg-slate-900 p-3 text-sm text-slate-100"><code class="language-html">&lt;ul&gt;
-  &lt;li v-for="item in cart.items" :key="item.id"&gt;
-    {{ item.title }} — {{ item.price }} x {{ item.qty }}
-    &lt;button @click="decreaseQty(item.id)"&gt;-&lt;/button&gt;
-    &lt;button @click="increaseQty(item.id)"&gt;+&lt;/button&gt;
-  &lt;/li&gt;
-&lt;/ul&gt;
+          <pre class="overflow-x-auto rounded-lg bg-slate-900 p-3 text-sm text-slate-100"><code class="language-html">&lt;template&gt;
+  &lt;section class="cart-card"&gt;
+    &lt;h2&gt;Финальная корзина&lt;/h2&gt;
 
-&lt;p&gt;Подытог: {{ subTotal }}&lt;/p&gt;
-&lt;p&gt;Итого: {{ total }}&lt;/p&gt;</code></pre>
+    &lt;ul&gt;
+      &lt;li v-for="item in cart.items" :key="item.id"&gt;
+        {{ item.title }} — {{ item.price }} ₽ x {{ item.qty }}
+        &lt;button @click="decreaseQty(item.id)"&gt;-&lt;/button&gt;
+        &lt;button @click="increaseQty(item.id)"&gt;+&lt;/button&gt;
+      &lt;/li&gt;
+    &lt;/ul&gt;
+
+    &lt;label&gt;Скидка (₽)&lt;/label&gt;
+    &lt;input v-model.number="promo" type="number" min="0" /&gt;
+
+    &lt;p&gt;Подытог: {{ subTotal }} ₽&lt;/p&gt;
+    &lt;p&gt;Доставка: {{ delivery }} ₽&lt;/p&gt;
+    &lt;p&gt;&lt;strong&gt;Итого: {{ total }} ₽&lt;/strong&gt;&lt;/p&gt;
+  &lt;/section&gt;
+&lt;/template&gt;
+
+&lt;script setup&gt;
+import { computed, reactive, ref } from 'vue'
+
+const cart = reactive({
+  items: [
+    { id: 1, title: 'Ноутбук', price: 90000, qty: 1 },
+    { id: 2, title: 'Мышь', price: 2500, qty: 2 }
+  ]
+})
+const promo = ref(0)
+const delivery = ref(500)
+
+const subTotal = computed(() =&gt;
+  cart.items.reduce((sum, item) =&gt; sum + item.price * item.qty, 0)
+)
+const total = computed(() =&gt; subTotal.value - promo.value + delivery.value)
+
+const increaseQty = (id) =&gt; {
+  const product = cart.items.find((item) =&gt; item.id === id)
+  if (product) product.qty += 1
+}
+
+const decreaseQty = (id) =&gt; {
+  const product = cart.items.find((item) =&gt; item.id === id)
+  if (product && product.qty > 1) product.qty -= 1
+}
+&lt;/script&gt;</code></pre>
+          <p class="mt-2 text-sm text-slate-700">Итоговый вариант собирает весь урок в один рабочий компонент корзины.</p>
         </article>
       </div>
     </section>

@@ -121,9 +121,20 @@
           <pre class="overflow-x-auto rounded-lg bg-slate-900 p-3 text-sm text-slate-100"><code class="language-html">&lt;!-- components/BaseCard.vue --&gt;
 &lt;template&gt;
   &lt;section class="rounded-xl border p-4 shadow-sm"&gt;
+    &lt;header class="mb-2 font-semibold"&gt;{{ title }}&lt;/header&gt;
     &lt;slot /&gt;
   &lt;/section&gt;
-&lt;/template&gt;</code></pre>
+&lt;/template&gt;
+
+&lt;script setup&gt;
+defineProps({
+  title: {
+    type: String,
+    default: 'Карточка'
+  }
+})
+&lt;/script&gt;</code></pre>
+          <p class="mt-2 text-sm text-slate-700">Базовый компонент уже пригоден для реального переиспользования: слот + параметризуемый заголовок.</p>
         </article>
 
         <article class="rounded-xl bg-slate-50 p-4 ring-1 ring-slate-200">
@@ -134,10 +145,12 @@ import BaseCard from './components/BaseCard.vue'
 &lt;/script&gt;
 
 &lt;template&gt;
-  &lt;BaseCard&gt;
-    &lt;h2&gt;Профиль пользователя&lt;/h2&gt;
+  &lt;BaseCard title="Профиль пользователя"&gt;
+    &lt;p&gt;Имя: Анна Кузнецова&lt;/p&gt;
+    &lt;p&gt;Роль: Frontend Developer&lt;/p&gt;
   &lt;/BaseCard&gt;
 &lt;/template&gt;</code></pre>
+          <p class="mt-2 text-sm text-slate-700">Показывает типовой сценарий локальной регистрации: явный импорт и использование в одном родителе.</p>
         </article>
 
         <article class="rounded-xl bg-slate-50 p-4 ring-1 ring-slate-200">
@@ -150,18 +163,32 @@ import BaseButton from './components/BaseButton.vue'
 const app = createApp(App)
 app.component('BaseButton', BaseButton)
 app.mount('#app')</code></pre>
+          <pre class="mt-3 overflow-x-auto rounded-lg bg-slate-900 p-3 text-sm text-slate-100"><code class="language-html">&lt;!-- Любой .vue файл после регистрации --&gt;
+&lt;template&gt;
+  &lt;BaseButton&gt;Сохранить изменения&lt;/BaseButton&gt;
+&lt;/template&gt;</code></pre>
           <p class="mt-2 text-sm text-slate-700">После этого <code>&lt;BaseButton /&gt;</code> можно использовать без импорта в каждом файле.</p>
         </article>
 
         <article class="rounded-xl bg-slate-50 p-4 ring-1 ring-slate-200">
           <h3 class="mb-2 text-lg font-medium">Шаг 4. Собери профиль из предметных компонентов</h3>
           <pre class="overflow-x-auto rounded-lg bg-slate-900 p-3 text-sm text-slate-100"><code class="language-html">&lt;!-- ProfilePage.vue --&gt;
+&lt;script setup&gt;
+import ProfileHeader from './components/ProfileHeader.vue'
+import ProfileContacts from './components/ProfileContacts.vue'
+import ProfileStats from './components/ProfileStats.vue'
+import ProfileSkills from './components/ProfileSkills.vue'
+import ProfileActivity from './components/ProfileActivity.vue'
+&lt;/script&gt;
+
 &lt;template&gt;
-  &lt;ProfileHeader /&gt;
-  &lt;ProfileContacts /&gt;
-  &lt;ProfileStats /&gt;
-  &lt;ProfileSkills /&gt;
-  &lt;ProfileActivity /&gt;
+  &lt;main class="space-y-4"&gt;
+    &lt;ProfileHeader /&gt;
+    &lt;ProfileContacts /&gt;
+    &lt;ProfileStats /&gt;
+    &lt;ProfileSkills /&gt;
+    &lt;ProfileActivity /&gt;
+  &lt;/main&gt;
 &lt;/template&gt;</code></pre>
           <p class="mt-2 text-sm text-slate-700">Так логика и разметка становятся проще в поддержке.</p>
         </article>
@@ -181,20 +208,35 @@ const tabMap = {
 &lt;/script&gt;
 
 &lt;template&gt;
+  &lt;div class="mb-3 flex gap-2"&gt;
+    &lt;button @click="currentTab = 'about'"&gt;Обо мне&lt;/button&gt;
+    &lt;button @click="currentTab = 'projects'"&gt;Проекты&lt;/button&gt;
+  &lt;/div&gt;
   &lt;component :is="tabMap[currentTab]" /&gt;
 &lt;/template&gt;</code></pre>
+          <p class="mt-2 text-sm text-slate-700">Реальный пример табов: кнопки меняют активный компонент без дублирования шаблонов.</p>
         </article>
 
         <article class="rounded-xl bg-slate-50 p-4 ring-1 ring-slate-200">
           <h3 class="mb-2 text-lg font-medium">Шаг 6. Асинхронная загрузка тяжелого блока</h3>
-          <pre class="overflow-x-auto rounded-lg bg-slate-900 p-3 text-sm text-slate-100"><code class="language-javascript">import { defineAsyncComponent } from 'vue'
+          <pre class="overflow-x-auto rounded-lg bg-slate-900 p-3 text-sm text-slate-100"><code class="language-html">&lt;script setup&gt;
+import { defineAsyncComponent } from 'vue'
 
-const ProfileCharts = defineAsyncComponent(() =>
+const ProfileCharts = defineAsyncComponent(() =&gt;
   import('./ProfileCharts.vue')
-)</code></pre>
+)
+&lt;/script&gt;</code></pre>
           <pre class="mt-3 overflow-x-auto rounded-lg bg-slate-900 p-3 text-sm text-slate-100"><code class="language-html">&lt;template&gt;
-  &lt;ProfileCharts /&gt;
+  &lt;Suspense&gt;
+    &lt;template #default&gt;
+      &lt;ProfileCharts /&gt;
+    &lt;/template&gt;
+    &lt;template #fallback&gt;
+      &lt;p&gt;Загружаем графики профиля...&lt;/p&gt;
+    &lt;/template&gt;
+  &lt;/Suspense&gt;
 &lt;/template&gt;</code></pre>
+          <p class="mt-2 text-sm text-slate-700">Так тяжелый блок грузится по требованию, а пользователь видит понятный fallback.</p>
         </article>
       </div>
     </section>

@@ -92,57 +92,90 @@
         <article class="rounded-xl bg-slate-50 p-4 ring-1 ring-slate-200">
           <h3 class="font-medium">Шаг 1. Раздели store по доменам</h3>
           <pre class="overflow-x-auto rounded-lg bg-slate-900 p-3 text-sm text-slate-100"><code class="language-javascript">// stores/auth.js
-export const useAuthStore = defineStore('auth', { /* ... */ })
+export const useAuthStore = defineStore('auth', {
+  state: () => ({ user: null, token: '' })
+})
 
 // stores/cart.js
-export const useCartStore = defineStore('cart', { /* ... */ })</code></pre>
-          <p class="mt-2 text-sm text-slate-700">Зачем шаг: легче поддерживать и тестировать состояние.</p>
+export const useCartStore = defineStore('cart', {
+  state: () => ({ items: [], coupon: null })
+})
+
+// stores/ui.js
+export const useUiStore = defineStore('ui', {
+  state: () => ({ sidebarOpen: false })
+})</code></pre>
+          <p class="mt-2 text-sm text-slate-700">Четкое деление по доменам сразу делает архитектуру прозрачной для команды.</p>
         </article>
 
         <article class="rounded-xl bg-slate-50 p-4 ring-1 ring-slate-200">
           <h3 class="font-medium">Шаг 2. Подключи pinia-plugin с меткой обновления</h3>
-          <pre class="overflow-x-auto rounded-lg bg-slate-900 p-3 text-sm text-slate-100"><code class="language-javascript">function timestampPlugin({ store }) {
+          <pre class="overflow-x-auto rounded-lg bg-slate-900 p-3 text-sm text-slate-100"><code class="language-javascript">// plugins/timestamp-plugin.js
+export function timestampPlugin({ store }) {
+  store.lastUpdatedAt = null
   store.$subscribe(() => {
     store.lastUpdatedAt = Date.now()
   })
 }
 
+// main.js
+import { createPinia } from 'pinia'
+import { timestampPlugin } from './plugins/timestamp-plugin'
+
 const pinia = createPinia()
 pinia.use(timestampPlugin)</code></pre>
-          <p class="mt-2 text-sm text-slate-700">Что изменится: можно отслеживать, когда состояние обновлялось в последний раз.</p>
+          <p class="mt-2 text-sm text-slate-700">Плагин централизованно добавляет одно и то же поведение всем store.</p>
         </article>
 
         <article class="rounded-xl bg-slate-50 p-4 ring-1 ring-slate-200">
           <h3 class="font-medium">Шаг 3. Сохраняй только нужные поля корзины</h3>
-          <pre class="overflow-x-auto rounded-lg bg-slate-900 p-3 text-sm text-slate-100"><code class="language-javascript">cartStore.$subscribe((_mutation, state) => {
-  localStorage.setItem(
-    'cart',
-    JSON.stringify({ items: state.items, coupon: state.coupon })
-  )
+          <pre class="overflow-x-auto rounded-lg bg-slate-900 p-3 text-sm text-slate-100"><code class="language-javascript">// в bootstrap-файле store
+const cartStore = useCartStore()
+
+cartStore.$subscribe((_mutation, state) => {
+  const payload = {
+    items: state.items,
+    coupon: state.coupon
+  }
+  localStorage.setItem('cart', JSON.stringify(payload))
 })</code></pre>
-          <p class="mt-2 text-sm text-slate-700">Зачем шаг: в storage не должно попадать лишнее и чувствительное.</p>
+          <p class="mt-2 text-sm text-slate-700">В localStorage попадает только бизнес-нужный минимум без лишних полей.</p>
         </article>
 
         <article class="rounded-xl bg-slate-50 p-4 ring-1 ring-slate-200">
           <h3 class="font-medium">Шаг 4. Восстанови persist при старте</h3>
-          <pre class="overflow-x-auto rounded-lg bg-slate-900 p-3 text-sm text-slate-100"><code class="language-javascript">const saved = localStorage.getItem('cart')
+          <pre class="overflow-x-auto rounded-lg bg-slate-900 p-3 text-sm text-slate-100"><code class="language-javascript">// при инициализации приложения
+const cartStore = useCartStore()
+const saved = localStorage.getItem('cart')
+
 if (saved) {
-  const parsed = JSON.parse(saved)
-  cartStore.$patch({
-    items: Array.isArray(parsed.items) ? parsed.items : [],
-    coupon: parsed.coupon ?? null
-  })
+  try {
+    const parsed = JSON.parse(saved)
+    cartStore.$patch({
+      items: Array.isArray(parsed.items) ? parsed.items : [],
+      coupon: typeof parsed.coupon === 'string' ? parsed.coupon : null
+    })
+  } catch {
+    localStorage.removeItem('cart')
+  }
 }</code></pre>
-          <p class="mt-2 text-sm text-slate-700">Что изменится: корзина не теряется после обновления страницы.</p>
+          <p class="mt-2 text-sm text-slate-700">Восстановление защищено от битых данных и не ломает запуск приложения.</p>
         </article>
 
         <article class="rounded-xl bg-slate-50 p-4 ring-1 ring-slate-200">
           <h3 class="font-medium">Шаг 5. Убери дублирование состояния</h3>
-          <pre class="overflow-x-auto rounded-lg bg-slate-900 p-3 text-sm text-slate-100"><code class="language-javascript">// Плохо: user хранится в authStore и profileStore одновременно
-// Хорошо: единый источник в authStore, profileStore берет данные через getter
-const authStore = useAuthStore()
-const userName = computed(() => authStore.user?.name ?? '')</code></pre>
-          <p class="mt-2 text-sm text-slate-700">Зачем шаг: один источник правды снижает риск рассинхрона.</p>
+          <pre class="overflow-x-auto rounded-lg bg-slate-900 p-3 text-sm text-slate-100"><code class="language-javascript">// profile-store.js
+import { computed } from 'vue'
+import { defineStore } from 'pinia'
+import { useAuthStore } from './auth'
+
+export const useProfileStore = defineStore('profile', () => {
+  const authStore = useAuthStore()
+  const userName = computed(() => authStore.user?.name ?? '')
+
+  return { userName }
+})</code></pre>
+          <p class="mt-2 text-sm text-slate-700">Единый источник правды в `auth` убирает рассинхрон между модулями.</p>
         </article>
       </div>
     </section>

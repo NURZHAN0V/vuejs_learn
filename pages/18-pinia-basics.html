@@ -119,6 +119,7 @@ import App from './App.vue'
 const app = createApp(App)
 app.use(createPinia())
 app.mount('#app')</code></pre>
+          <p class="mt-2 text-sm text-slate-700">После этого любой компонент может безопасно использовать глобальные store.</p>
         </article>
 
         <article class="rounded-xl bg-slate-50 p-4 ring-1 ring-slate-200">
@@ -130,49 +131,60 @@ import { computed, ref } from 'vue'
 export const useCartStore = defineStore('cart', () => {
   const items = ref([])
   const total = computed(() => items.value.reduce((sum, i) => sum + i.price * i.qty, 0))
+  const count = computed(() => items.value.reduce((sum, i) => sum + i.qty, 0))
 
   function addItem(product) {
-    const found = items.value.find(i => i.id === product.id)
+    const found = items.value.find((i) => i.id === product.id)
     if (found) found.qty += 1
     else items.value.push({ ...product, qty: 1 })
   }
 
   function removeItem(id) {
-    items.value = items.value.filter(i => i.id !== id)
+    items.value = items.value.filter((i) => i.id !== id)
   }
 
-  return { items, total, addItem, removeItem }
+  return { items, total, count, addItem, removeItem }
 })</code></pre>
+          <p class="mt-2 text-sm text-slate-700">Store сразу покрывает базовый цикл корзины: добавление, удаление и подсчет.</p>
         </article>
 
         <article class="rounded-xl bg-slate-50 p-4 ring-1 ring-slate-200">
           <h3 class="font-medium">Шаг 3. Option Store (альтернатива)</h3>
-          <pre class="overflow-x-auto rounded-lg bg-slate-900 p-3 text-sm text-slate-100"><code class="language-javascript">export const useCartOptionStore = defineStore('cartOption', {
+          <pre class="overflow-x-auto rounded-lg bg-slate-900 p-3 text-sm text-slate-100"><code class="language-javascript">// stores/cart-option.js
+import { defineStore } from 'pinia'
+
+export const useCartOptionStore = defineStore('cartOption', {
   state: () => ({ items: [] }),
   getters: {
     total: (state) => state.items.reduce((sum, i) => sum + i.price * i.qty, 0)
   },
   actions: {
     addItem(product) {
-      const found = this.items.find(i => i.id === product.id)
+      const found = this.items.find((i) => i.id === product.id)
       if (found) found.qty += 1
       else this.items.push({ ...product, qty: 1 })
     }
   }
 })</code></pre>
+          <p class="mt-2 text-sm text-slate-700">Полезно знать оба стиля, чтобы читать любой Pinia-код в проектах.</p>
         </article>
 
         <article class="rounded-xl bg-slate-50 p-4 ring-1 ring-slate-200">
           <h3 class="font-medium">Шаг 4. Используй store в компоненте</h3>
-          <pre class="overflow-x-auto rounded-lg bg-slate-900 p-3 text-sm text-slate-100"><code class="language-html">&lt;script setup&gt;
+          <pre class="overflow-x-auto rounded-lg bg-slate-900 p-3 text-sm text-slate-100"><code class="language-html">&lt;!-- ProductCard.vue --&gt;
+&lt;script setup&gt;
 import { useCartStore } from '../stores/cart'
 const cart = useCartStore()
+const product = { id: 1, title: 'Книга', price: 900 }
 &lt;/script&gt;
 
 &lt;template&gt;
-  &lt;p&gt;Итого: {{ cart.total }} ₽&lt;/p&gt;
-  &lt;button @click="cart.addItem({ id: 1, title: 'Книга', price: 900 })"&gt;Добавить&lt;/button&gt;
+  &lt;h3&gt;{{ product.title }}&lt;/h3&gt;
+  &lt;p&gt;{{ product.price }} ₽&lt;/p&gt;
+  &lt;button @click="cart.addItem(product)"&gt;Добавить в корзину&lt;/button&gt;
+  &lt;p&gt;Товаров в корзине: {{ cart.count }}&lt;/p&gt;
 &lt;/template&gt;</code></pre>
+          <p class="mt-2 text-sm text-slate-700">Один store переиспользуется сразу в карточке товара, мини-корзине и checkout.</p>
         </article>
 
         <article class="rounded-xl bg-slate-50 p-4 ring-1 ring-slate-200">
@@ -182,20 +194,25 @@ const cart = useCartStore()
   cart.js
   products.js
   ui.js</code></pre>
+          <p class="mt-2 text-sm text-slate-700">Так команда быстрее находит логику и не раздувает один огромный store.</p>
         </article>
 
         <article class="rounded-xl bg-slate-50 p-4 ring-1 ring-slate-200">
           <h3 class="font-medium">Шаг 6. Persist состояния (практика)</h3>
-          <pre class="overflow-x-auto rounded-lg bg-slate-900 p-3 text-sm text-slate-100"><code class="language-javascript">// stores/cart.js
+          <pre class="overflow-x-auto rounded-lg bg-slate-900 p-3 text-sm text-slate-100"><code class="language-javascript">// stores/cart.js (внутри defineStore)
 import { watch } from 'vue'
 
-// внутри store
 const raw = localStorage.getItem('cart-items')
 if (raw) items.value = JSON.parse(raw)
 
-watch(items, (val) => {
-  localStorage.setItem('cart-items', JSON.stringify(val))
-}, { deep: true })</code></pre>
+watch(
+  items,
+  (val) => {
+    localStorage.setItem('cart-items', JSON.stringify(val))
+  },
+  { deep: true }
+)</code></pre>
+          <p class="mt-2 text-sm text-slate-700">После перезагрузки пользователь видит ту же корзину, что и до закрытия вкладки.</p>
         </article>
 
         <article class="rounded-xl bg-slate-50 p-4 ring-1 ring-slate-200">
@@ -204,6 +221,7 @@ watch(items, (val) => {
 - Не храни временный UI-state глобально без нужды
 - Выноси бизнес-правила в actions
 - Не дублируй одни и те же данные в разных store</code></pre>
+          <p class="mt-2 text-sm text-slate-700">Это базовые правила, которые удерживают глобальное состояние в предсказуемом виде.</p>
         </article>
       </div>
     </section>

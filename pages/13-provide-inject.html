@@ -116,6 +116,7 @@
           <h3 class="mb-2 text-lg font-medium">Шаг 1. Создай символ-ключ</h3>
           <pre class="overflow-x-auto rounded-lg bg-slate-900 p-3 text-sm text-slate-100"><code class="language-javascript">// themeKey.js
 export const THEME_KEY = Symbol('theme')</code></pre>
+          <p class="mt-2 text-sm text-slate-700">Символьный ключ гарантирует, что контекст темы не конфликтует с другими инъекциями.</p>
         </article>
 
         <article class="rounded-xl bg-slate-50 p-4 ring-1 ring-slate-200">
@@ -131,6 +132,13 @@ const toggleTheme = () => {
 
 provide(THEME_KEY, { theme, toggleTheme })
 &lt;/script&gt;</code></pre>
+          <pre class="mt-3 overflow-x-auto rounded-lg bg-slate-900 p-3 text-sm text-slate-100"><code class="language-html">&lt;template&gt;
+  &lt;main :class="theme === 'dark' ? 'bg-slate-900 text-white' : 'bg-white text-slate-900'"&gt;
+    &lt;Toolbar /&gt;
+    &lt;DashboardLayout /&gt;
+  &lt;/main&gt;
+&lt;/template&gt;</code></pre>
+          <p class="mt-2 text-sm text-slate-700">Провайдер находится на верхнем уровне и делает тему доступной для всей вложенной ветки.</p>
         </article>
 
         <article class="rounded-xl bg-slate-50 p-4 ring-1 ring-slate-200">
@@ -146,13 +154,19 @@ const themeContext = inject(THEME_KEY)
   &lt;p&gt;Тема: {{ themeContext.theme }}&lt;/p&gt;
   &lt;button @click="themeContext.toggleTheme"&gt;Сменить тему&lt;/button&gt;
 &lt;/template&gt;</code></pre>
+          <p class="mt-2 text-sm text-slate-700">Даже глубоко вложенный компонент получает тему напрямую, без прокидывания через промежуточные props.</p>
         </article>
 
         <article class="rounded-xl bg-slate-50 p-4 ring-1 ring-slate-200">
           <h3 class="mb-2 text-lg font-medium">Шаг 4. Реактивное оформление по теме</h3>
-          <pre class="overflow-x-auto rounded-lg bg-slate-900 p-3 text-sm text-slate-100"><code class="language-html">&lt;div :class="themeContext.theme === 'dark' ? 'bg-slate-900 text-white' : 'bg-white text-slate-900'"&gt;
+          <pre class="overflow-x-auto rounded-lg bg-slate-900 p-3 text-sm text-slate-100"><code class="language-html">&lt;template&gt;
+&lt;div :class="themeContext.theme === 'dark' ? 'bg-slate-900 text-white' : 'bg-white text-slate-900'"&gt;
   Контент компонента
 &lt;/div&gt;</code></pre>
+          <pre class="mt-3 overflow-x-auto rounded-lg bg-slate-900 p-3 text-sm text-slate-100"><code class="language-html">&lt;button @click="themeContext.toggleTheme"&gt;
+  Переключить тему (сейчас: {{ themeContext.theme }})
+&lt;/button&gt;
+&lt;/template&gt;</code></pre>
           <p class="mt-2 text-sm text-slate-700">При смене темы интерфейс обновляется автоматически, потому что передан реактивный <code>ref</code>.</p>
         </article>
 
@@ -167,8 +181,19 @@ const themeContext = inject(THEME_KEY)
 
         <article class="rounded-xl bg-slate-50 p-4 ring-1 ring-slate-200">
           <h3 class="mb-2 text-lg font-medium">Шаг 6. Когда выбрать props/emits вместо provide/inject</h3>
-          <pre class="overflow-x-auto rounded-lg bg-slate-900 p-3 text-sm text-slate-100"><code class="language-text">Если связь простая (родитель ↔ один ребенок), чаще лучше props/emits.
-Если данные нужны глубоко в нескольких ветках — удобнее provide/inject.</code></pre>
+          <pre class="overflow-x-auto rounded-lg bg-slate-900 p-3 text-sm text-slate-100"><code class="language-html">&lt;!-- Хороший кейс для props/emits --&gt;
+&lt;Parent&gt;
+  &lt;ProfileActions :user-id="userId" @save="saveUser" /&gt;
+&lt;/Parent&gt;
+
+&lt;!-- Хороший кейс для provide/inject --&gt;
+&lt;AppLayout&gt;
+  &lt;Sidebar /&gt;
+  &lt;MainContent /&gt;
+  &lt;NotificationsPanel /&gt;
+&lt;/AppLayout&gt;
+&lt;!-- Все три получают общий themeContext через inject --&gt;</code></pre>
+          <p class="mt-2 text-sm text-slate-700">Правило: локальная связь — <code>props/emits</code>, сквозной контекст на много уровней — <code>provide/inject</code>.</p>
         </article>
       </div>
     </section>

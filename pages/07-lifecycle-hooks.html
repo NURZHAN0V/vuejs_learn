@@ -117,65 +117,148 @@
       <div class="space-y-5">
         <article class="rounded-xl bg-slate-50 p-4 ring-1 ring-slate-200">
           <h3 class="mb-2 text-lg font-medium">Шаг 1. Подготовь состояние таймера</h3>
-          <pre class="overflow-x-auto rounded-lg bg-slate-900 p-3 text-sm text-slate-100"><code class="language-javascript">import { ref } from 'vue'
+          <pre class="overflow-x-auto rounded-lg bg-slate-900 p-3 text-sm text-slate-100"><code class="language-html">&lt;template&gt;
+  &lt;section class="timer-card"&gt;
+    &lt;h2&gt;Таймер урока&lt;/h2&gt;
+    &lt;p&gt;Секунд прошло: {{ seconds }}&lt;/p&gt;
+  &lt;/section&gt;
+&lt;/template&gt;
+
+&lt;script setup&gt;
+import { ref } from 'vue'
 
 const seconds = ref(0)
-let timerId = null</code></pre>
+let timerId = null
+&lt;/script&gt;</code></pre>
+          <p class="mt-2 text-sm text-slate-700">База компонента: есть реактивное значение и переменная под ID интервала.</p>
         </article>
 
         <article class="rounded-xl bg-slate-50 p-4 ring-1 ring-slate-200">
           <h3 class="mb-2 text-lg font-medium">Шаг 2. Запускай таймер в onMounted</h3>
-          <pre class="overflow-x-auto rounded-lg bg-slate-900 p-3 text-sm text-slate-100"><code class="language-javascript">import { onMounted } from 'vue'
+          <pre class="overflow-x-auto rounded-lg bg-slate-900 p-3 text-sm text-slate-100"><code class="language-html">&lt;template&gt;
+  &lt;section class="timer-card"&gt;
+    &lt;p&gt;Секунд прошло: {{ seconds }}&lt;/p&gt;
+  &lt;/section&gt;
+&lt;/template&gt;
 
-onMounted(() => {
-  timerId = setInterval(() => {
+&lt;script setup&gt;
+import { onMounted, ref } from 'vue'
+
+const seconds = ref(0)
+let timerId = null
+
+onMounted(() =&gt; {
+  timerId = setInterval(() =&gt; {
     seconds.value += 1
   }, 1000)
-})</code></pre>
+})
+&lt;/script&gt;</code></pre>
+          <p class="mt-2 text-sm text-slate-700">Таймер стартует только когда компонент реально появился в DOM.</p>
         </article>
 
         <article class="rounded-xl bg-slate-50 p-4 ring-1 ring-slate-200">
           <h3 class="mb-2 text-lg font-medium">Шаг 3. Очисти таймер в onUnmounted</h3>
-          <pre class="overflow-x-auto rounded-lg bg-slate-900 p-3 text-sm text-slate-100"><code class="language-javascript">import { onUnmounted } from 'vue'
+          <pre class="overflow-x-auto rounded-lg bg-slate-900 p-3 text-sm text-slate-100"><code class="language-html">&lt;template&gt;
+  &lt;section class="timer-card"&gt;
+    &lt;p&gt;Секунд прошло: {{ seconds }}&lt;/p&gt;
+  &lt;/section&gt;
+&lt;/template&gt;
 
-onUnmounted(() => {
-  clearInterval(timerId)
-})</code></pre>
+&lt;script setup&gt;
+import { onMounted, onUnmounted, ref } from 'vue'
+
+const seconds = ref(0)
+let timerId = null
+
+onMounted(() =&gt; {
+  timerId = setInterval(() =&gt; {
+    seconds.value += 1
+  }, 1000)
+})
+
+onUnmounted(() =&gt; {
+  if (timerId) clearInterval(timerId)
+})
+&lt;/script&gt;</code></pre>
           <p class="mt-2 text-sm text-slate-700">Это защищает от утечки памяти и "фоновой" работы удаленного компонента.</p>
         </article>
 
         <article class="rounded-xl bg-slate-50 p-4 ring-1 ring-slate-200">
           <h3 class="mb-2 text-lg font-medium">Шаг 4. onBeforeUpdate и onUpdated для отладки</h3>
-          <pre class="overflow-x-auto rounded-lg bg-slate-900 p-3 text-sm text-slate-100"><code class="language-javascript">import { onBeforeUpdate, onUpdated } from 'vue'
+          <pre class="overflow-x-auto rounded-lg bg-slate-900 p-3 text-sm text-slate-100"><code class="language-html">&lt;template&gt;
+  &lt;section class="timer-card"&gt;
+    &lt;p&gt;Секунд прошло: {{ seconds }}&lt;/p&gt;
+    &lt;p&gt;Лог обновлений: {{ updatesCount }}&lt;/p&gt;
+    &lt;button @click="seconds++"&gt;+1 вручную&lt;/button&gt;
+  &lt;/section&gt;
+&lt;/template&gt;
 
-onBeforeUpdate(() => {
-  console.log('Перед обновлением DOM')
+&lt;script setup&gt;
+import { onBeforeUpdate, onUpdated, ref } from 'vue'
+
+const seconds = ref(0)
+const updatesCount = ref(0)
+
+onBeforeUpdate(() =&gt; {
+  console.log('Перед обновлением DOM, seconds =', seconds.value)
 })
 
-onUpdated(() => {
-  console.log('После обновления DOM')
-})</code></pre>
+onUpdated(() =&gt; {
+  updatesCount.value += 1
+  console.log('После обновления DOM, updates =', updatesCount.value)
+})
+&lt;/script&gt;</code></pre>
+          <p class="mt-2 text-sm text-slate-700">Хуки помогают понять порядок обновления и найти место, где появляется лишний ререндер.</p>
         </article>
 
         <article class="rounded-xl bg-slate-50 p-4 ring-1 ring-slate-200">
           <h3 class="mb-2 text-lg font-medium">Шаг 5. Используй nextTick после изменения данных</h3>
-          <pre class="overflow-x-auto rounded-lg bg-slate-900 p-3 text-sm text-slate-100"><code class="language-javascript">import { nextTick } from 'vue'
+          <pre class="overflow-x-auto rounded-lg bg-slate-900 p-3 text-sm text-slate-100"><code class="language-html">&lt;template&gt;
+  &lt;section class="timer-card"&gt;
+    &lt;p ref="counterRef"&gt;Секунд прошло: {{ seconds }}&lt;/p&gt;
+    &lt;button @click="resetTimer"&gt;Сбросить таймер&lt;/button&gt;
+  &lt;/section&gt;
+&lt;/template&gt;
 
-const resetTimer = async () => {
+&lt;script setup&gt;
+import { nextTick, ref } from 'vue'
+
+const seconds = ref(12)
+const counterRef = ref(null)
+
+const resetTimer = async () =&gt; {
   seconds.value = 0
   await nextTick()
-  console.log('DOM уже обновился после сброса')
-}</code></pre>
+  counterRef.value?.scrollIntoView({ behavior: 'smooth', block: 'center' })
+}
+&lt;/script&gt;</code></pre>
+          <p class="mt-2 text-sm text-slate-700"><code>nextTick</code> нужен, когда действие с DOM должно произойти после фактического обновления шаблона.</p>
         </article>
 
         <article class="rounded-xl bg-slate-50 p-4 ring-1 ring-slate-200">
           <h3 class="mb-2 text-lg font-medium">Шаг 6. Перехват ошибок через onErrorCaptured</h3>
-          <pre class="overflow-x-auto rounded-lg bg-slate-900 p-3 text-sm text-slate-100"><code class="language-javascript">import { onErrorCaptured } from 'vue'
+          <pre class="overflow-x-auto rounded-lg bg-slate-900 p-3 text-sm text-slate-100"><code class="language-html">&lt;template&gt;
+  &lt;section class="timer-card"&gt;
+    &lt;p v-if="errorMessage" class="error"&gt;Ошибка: {{ errorMessage }}&lt;/p&gt;
+    &lt;button @click="triggerChildLikeError"&gt;Симулировать ошибку&lt;/button&gt;
+  &lt;/section&gt;
+&lt;/template&gt;
 
-onErrorCaptured((error, instance, info) => {
-  console.error('Ошибка в дочернем компоненте:', error, info)
+&lt;script setup&gt;
+import { onErrorCaptured, ref } from 'vue'
+
+const errorMessage = ref('')
+
+const triggerChildLikeError = () =&gt; {
+  throw new Error('Тестовая ошибка таймера')
+}
+
+onErrorCaptured((error, instance, info) =&gt; {
+  errorMessage.value = `${error.message} (${info})`
+  console.error('Ошибка в дочернем компоненте:', error, info, instance)
   return false
-})</code></pre>
+})
+&lt;/script&gt;</code></pre>
           <p class="mt-2 text-sm text-slate-700">Так можно централизованно фиксировать ошибки в сложном интерфейсе.</p>
         </article>
       </div>

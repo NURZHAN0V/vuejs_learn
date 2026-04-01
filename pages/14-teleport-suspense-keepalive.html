@@ -128,13 +128,25 @@ const tabs = { profile: TabProfile, settings: TabSettings }
   &lt;button @click="activeTab = 'settings'"&gt;Настройки&lt;/button&gt;
   &lt;component :is="tabs[activeTab]" /&gt;
 &lt;/template&gt;</code></pre>
+          <p class="mt-2 text-sm text-slate-700">Базовая структура вкладок, на которую дальше добавляются KeepAlive, Teleport и Suspense.</p>
         </article>
 
         <article class="rounded-xl bg-slate-50 p-4 ring-1 ring-slate-200">
           <h3 class="mb-2 text-lg font-medium">Шаг 2. Добавь KeepAlive для сохранения состояния вкладок</h3>
-          <pre class="overflow-x-auto rounded-lg bg-slate-900 p-3 text-sm text-slate-100"><code class="language-html">&lt;KeepAlive&gt;
-  &lt;component :is="tabs[activeTab]" /&gt;
-&lt;/KeepAlive&gt;</code></pre>
+          <pre class="overflow-x-auto rounded-lg bg-slate-900 p-3 text-sm text-slate-100"><code class="language-html">&lt;template&gt;
+  &lt;KeepAlive&gt;
+    &lt;component :is="tabs[activeTab]" /&gt;
+  &lt;/KeepAlive&gt;
+&lt;/template&gt;</code></pre>
+          <pre class="mt-3 overflow-x-auto rounded-lg bg-slate-900 p-3 text-sm text-slate-100"><code class="language-html">&lt;!-- TabSettings.vue --&gt;
+&lt;template&gt;
+  &lt;input v-model="nickname" placeholder="Никнейм" /&gt;
+&lt;/template&gt;
+
+&lt;script setup&gt;
+import { ref } from 'vue'
+const nickname = ref('')
+&lt;/script&gt;</code></pre>
           <p class="mt-2 text-sm text-slate-700">Теперь состояние формы внутри вкладки не теряется при переключении.</p>
         </article>
 
@@ -157,15 +169,22 @@ const isModalOpen = ref(false)
     &lt;/div&gt;
   &lt;/Teleport&gt;
 &lt;/template&gt;</code></pre>
+          <p class="mt-2 text-sm text-slate-700">Teleport помогает модалке корректно перекрывать интерфейс независимо от глубины вложенности компонента.</p>
         </article>
 
         <article class="rounded-xl bg-slate-50 p-4 ring-1 ring-slate-200">
           <h3 class="mb-2 text-lg font-medium">Шаг 4. Асинхронный компонент для тяжелой части</h3>
-          <pre class="overflow-x-auto rounded-lg bg-slate-900 p-3 text-sm text-slate-100"><code class="language-javascript">import { defineAsyncComponent } from 'vue'
+          <pre class="overflow-x-auto rounded-lg bg-slate-900 p-3 text-sm text-slate-100"><code class="language-javascript">&lt;script setup&gt;
+import { defineAsyncComponent } from 'vue'
 
 const HeavyChart = defineAsyncComponent(() =>
   import('./HeavyChart.vue')
-)</code></pre>
+)
+&lt;/script&gt;</code></pre>
+          <pre class="mt-3 overflow-x-auto rounded-lg bg-slate-900 p-3 text-sm text-slate-100"><code class="language-html">&lt;template&gt;
+  &lt;HeavyChart /&gt;
+&lt;/template&gt;</code></pre>
+          <p class="mt-2 text-sm text-slate-700">Тяжелый компонент подгружается по требованию и не замедляет начальный рендер страницы.</p>
         </article>
 
         <article class="rounded-xl bg-slate-50 p-4 ring-1 ring-slate-200">
@@ -178,22 +197,38 @@ const HeavyChart = defineAsyncComponent(() =>
     &lt;p&gt;Загрузка графика...&lt;/p&gt;
   &lt;/template&gt;
 &lt;/Suspense&gt;</code></pre>
+          <p class="mt-2 text-sm text-slate-700">Пока модуль загружается, пользователь видит понятный fallback вместо пустого блока.</p>
         </article>
 
         <article class="rounded-xl bg-slate-50 p-4 ring-1 ring-slate-200">
           <h3 class="mb-2 text-lg font-medium">Шаг 6. Комбинация всего вместе</h3>
-          <pre class="overflow-x-auto rounded-lg bg-slate-900 p-3 text-sm text-slate-100"><code class="language-html">&lt;KeepAlive&gt;
-  &lt;component :is="tabs[activeTab]" /&gt;
-&lt;/KeepAlive&gt;
+          <pre class="overflow-x-auto rounded-lg bg-slate-900 p-3 text-sm text-slate-100"><code class="language-html">&lt;script setup&gt;
+import { defineAsyncComponent, ref } from 'vue'
+import TabProfile from './TabProfile.vue'
+import TabSettings from './TabSettings.vue'
+import Modal from './Modal.vue'
 
-&lt;Suspense&gt;
-  &lt;template #default&gt;&lt;HeavyChart /&gt;&lt;/template&gt;
-  &lt;template #fallback&gt;&lt;p&gt;Загрузка...&lt;/p&gt;&lt;/template&gt;
-&lt;/Suspense&gt;
+const activeTab = ref('profile')
+const isModalOpen = ref(false)
+const tabs = { profile: TabProfile, settings: TabSettings }
+const HeavyChart = defineAsyncComponent(() =&gt; import('./HeavyChart.vue'))
+&lt;/script&gt;
 
-&lt;Teleport to="body"&gt;
-  &lt;Modal v-if="isModalOpen" /&gt;
-&lt;/Teleport&gt;</code></pre>
+&lt;template&gt;
+  &lt;KeepAlive&gt;
+    &lt;component :is="tabs[activeTab]" /&gt;
+  &lt;/KeepAlive&gt;
+
+  &lt;Suspense&gt;
+    &lt;template #default&gt;&lt;HeavyChart /&gt;&lt;/template&gt;
+    &lt;template #fallback&gt;&lt;p&gt;Загрузка...&lt;/p&gt;&lt;/template&gt;
+  &lt;/Suspense&gt;
+
+  &lt;Teleport to="body"&gt;
+    &lt;Modal v-if="isModalOpen" /&gt;
+  &lt;/Teleport&gt;
+&lt;/template&gt;</code></pre>
+          <p class="mt-2 text-sm text-slate-700">Финальный пример объединяет все три механики в одном рабочем сценарии приложения.</p>
         </article>
       </div>
     </section>

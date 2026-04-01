@@ -118,25 +118,49 @@
       <div class="space-y-5">
         <article class="rounded-xl bg-slate-50 p-4 ring-1 ring-slate-200">
           <h3 class="mb-2 text-lg font-medium">Шаг 1. Родитель хранит состояние задач</h3>
-          <pre class="overflow-x-auto rounded-lg bg-slate-900 p-3 text-sm text-slate-100"><code class="language-javascript">// TodoList.vue
+          <pre class="overflow-x-auto rounded-lg bg-slate-900 p-3 text-sm text-slate-100"><code class="language-html">&lt;!-- TodoList.vue --&gt;
+&lt;template&gt;
+  &lt;section class="todo-list"&gt;
+    &lt;h2&gt;Мои задачи&lt;/h2&gt;
+    &lt;ul&gt;
+      &lt;li v-for="todo in todos" :key="todo.id"&gt;
+        {{ todo.title }} — {{ todo.done ? 'готово' : 'в работе' }}
+      &lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/section&gt;
+&lt;/template&gt;
+
+&lt;script setup&gt;
 import { ref } from 'vue'
 
 const todos = ref([
   { id: 1, title: 'Изучить props', done: false },
   { id: 2, title: 'Сделать emits', done: true }
-])</code></pre>
+])
+&lt;/script&gt;</code></pre>
+          <p class="mt-2 text-sm text-slate-700">Состояние хранится у родителя: это отправная точка для предсказуемого потока данных.</p>
         </article>
 
         <article class="rounded-xl bg-slate-50 p-4 ring-1 ring-slate-200">
           <h3 class="mb-2 text-lg font-medium">Шаг 2. Передай задачу в ребенка через props</h3>
           <pre class="overflow-x-auto rounded-lg bg-slate-900 p-3 text-sm text-slate-100"><code class="language-html">&lt;!-- TodoList.vue --&gt;
-&lt;TodoItem
-  v-for="todo in todos"
-  :key="todo.id"
-  :todo="todo"
-  @toggle="toggleTodo"
-  @remove="removeTodo"
-/&gt;</code></pre>
+&lt;script setup&gt;
+import { ref } from 'vue'
+import TodoItem from './TodoItem.vue'
+
+const todos = ref([
+  { id: 1, title: 'Изучить props', done: false },
+  { id: 2, title: 'Сделать emits', done: true }
+])
+&lt;/script&gt;
+
+&lt;template&gt;
+  &lt;TodoItem
+    v-for="todo in todos"
+    :key="todo.id"
+    :todo="todo"
+  /&gt;
+&lt;/template&gt;</code></pre>
           <pre class="mt-3 overflow-x-auto rounded-lg bg-slate-900 p-3 text-sm text-slate-100"><code class="language-javascript">// TodoItem.vue
 const props = defineProps({
   todo: {
@@ -144,26 +168,63 @@ const props = defineProps({
     required: true
   }
 })</code></pre>
+          <p class="mt-2 text-sm text-slate-700">Ребенок получает входные данные через явный API в <code>props</code> и не владеет состоянием списка.</p>
         </article>
 
         <article class="rounded-xl bg-slate-50 p-4 ring-1 ring-slate-200">
           <h3 class="mb-2 text-lg font-medium">Шаг 3. Отправляй события из ребенка через defineEmits</h3>
-          <pre class="overflow-x-auto rounded-lg bg-slate-900 p-3 text-sm text-slate-100"><code class="language-javascript">// TodoItem.vue
-const emit = defineEmits(['toggle', 'remove'])</code></pre>
-          <pre class="mt-3 overflow-x-auto rounded-lg bg-slate-900 p-3 text-sm text-slate-100"><code class="language-html">&lt;button @click="emit('toggle', props.todo.id)"&gt;Сменить статус&lt;/button&gt;
-&lt;button @click="emit('remove', props.todo.id)"&gt;Удалить&lt;/button&gt;</code></pre>
+          <pre class="overflow-x-auto rounded-lg bg-slate-900 p-3 text-sm text-slate-100"><code class="language-html">&lt;!-- TodoItem.vue --&gt;
+&lt;script setup&gt;
+const props = defineProps({
+  todo: {
+    type: Object,
+    required: true
+  }
+})
+const emit = defineEmits(['toggle', 'remove'])
+&lt;/script&gt;
+
+&lt;template&gt;
+  &lt;article class="todo-item"&gt;
+    &lt;p&gt;{{ props.todo.title }}&lt;/p&gt;
+    &lt;button @click="emit('toggle', props.todo.id)"&gt;Сменить статус&lt;/button&gt;
+    &lt;button @click="emit('remove', props.todo.id)"&gt;Удалить&lt;/button&gt;
+  &lt;/article&gt;
+&lt;/template&gt;</code></pre>
+          <p class="mt-2 text-sm text-slate-700">Ребенок не меняет данные напрямую, а уведомляет родителя о действии через событие.</p>
         </article>
 
         <article class="rounded-xl bg-slate-50 p-4 ring-1 ring-slate-200">
           <h3 class="mb-2 text-lg font-medium">Шаг 4. Родитель обрабатывает события</h3>
-          <pre class="overflow-x-auto rounded-lg bg-slate-900 p-3 text-sm text-slate-100"><code class="language-javascript">const toggleTodo = (id) => {
-  const item = todos.value.find((todo) => todo.id === id)
+          <pre class="overflow-x-auto rounded-lg bg-slate-900 p-3 text-sm text-slate-100"><code class="language-html">&lt;!-- TodoList.vue --&gt;
+&lt;script setup&gt;
+import { ref } from 'vue'
+import TodoItem from './TodoItem.vue'
+
+const todos = ref([
+  { id: 1, title: 'Изучить props', done: false },
+  { id: 2, title: 'Сделать emits', done: true }
+])
+
+const toggleTodo = (id) =&gt; {
+  const item = todos.value.find((todo) =&gt; todo.id === id)
   if (item) item.done = !item.done
 }
 
-const removeTodo = (id) => {
-  todos.value = todos.value.filter((todo) => todo.id !== id)
-}</code></pre>
+const removeTodo = (id) =&gt; {
+  todos.value = todos.value.filter((todo) =&gt; todo.id !== id)
+}
+&lt;/script&gt;
+
+&lt;template&gt;
+  &lt;TodoItem
+    v-for="todo in todos"
+    :key="todo.id"
+    :todo="todo"
+    @toggle="toggleTodo"
+    @remove="removeTodo"
+  /&gt;
+&lt;/template&gt;</code></pre>
           <p class="mt-2 text-sm text-slate-700">Ребенок сообщает "что произошло", а родитель решает "как менять состояние".</p>
         </article>
 
@@ -173,18 +234,39 @@ const removeTodo = (id) => {
 props.todo.done = true // так делать не нужно</code></pre>
           <pre class="mt-3 overflow-x-auto rounded-lg bg-slate-900 p-3 text-sm text-slate-100"><code class="language-javascript">// Хорошо: отправь событие
 emit('toggle', props.todo.id)</code></pre>
+          <p class="mt-2 text-sm text-slate-700">Так сохраняется однонаправленный поток данных и не появляется скрытых побочных эффектов.</p>
         </article>
 
         <article class="rounded-xl bg-slate-50 p-4 ring-1 ring-slate-200">
           <h3 class="mb-2 text-lg font-medium">Шаг 6. Несколько v-model на одном компоненте</h3>
           <pre class="overflow-x-auto rounded-lg bg-slate-900 p-3 text-sm text-slate-100"><code class="language-html">&lt;!-- Parent.vue --&gt;
-&lt;TodoEditor
-  v-model:title="draftTitle"
-  v-model:done="draftDone"
-/&gt;</code></pre>
+&lt;template&gt;
+  &lt;TodoEditor
+    v-model:title="draftTitle"
+    v-model:done="draftDone"
+  /&gt;
+  &lt;p&gt;Черновик: {{ draftTitle }} / {{ draftDone ? 'done' : 'todo' }}&lt;/p&gt;
+&lt;/template&gt;
+
+&lt;script setup&gt;
+import { ref } from 'vue'
+import TodoEditor from './TodoEditor.vue'
+
+const draftTitle = ref('Новая задача')
+const draftDone = ref(false)
+&lt;/script&gt;</code></pre>
           <pre class="mt-3 overflow-x-auto rounded-lg bg-slate-900 p-3 text-sm text-slate-100"><code class="language-javascript">// TodoEditor.vue
 const title = defineModel('title')
 const done = defineModel('done')</code></pre>
+          <pre class="mt-3 overflow-x-auto rounded-lg bg-slate-900 p-3 text-sm text-slate-100"><code class="language-html">&lt;!-- TodoEditor.vue --&gt;
+&lt;template&gt;
+  &lt;input v-model="title" placeholder="Название задачи" /&gt;
+  &lt;label&gt;
+    &lt;input v-model="done" type="checkbox" /&gt;
+    Выполнено
+  &lt;/label&gt;
+&lt;/template&gt;</code></pre>
+          <p class="mt-2 text-sm text-slate-700">Именованные модели помогают удобно редактировать несколько полей через один компонент.</p>
         </article>
       </div>
     </section>

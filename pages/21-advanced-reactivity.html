@@ -96,22 +96,53 @@
       <div class="space-y-5">
         <article class="rounded-xl bg-slate-50 p-4 ring-1 ring-slate-200">
           <h3 class="font-medium">Шаг 1. Безопасная деструктуризация через toRefs</h3>
-          <pre class="overflow-x-auto rounded-lg bg-slate-900 p-3 text-sm text-slate-100"><code class="language-javascript">import { reactive, toRefs } from 'vue'
+          <pre class="overflow-x-auto rounded-lg bg-slate-900 p-3 text-sm text-slate-100"><code class="language-html">&lt;script setup&gt;
+import { reactive, toRefs } from 'vue'
 
 const form = reactive({ name: '', email: '', settings: { notify: true } })
-const { name, email } = toRefs(form)</code></pre>
+const { name, email } = toRefs(form)
+&lt;/script&gt;
+
+&lt;template&gt;
+  &lt;input v-model="name" placeholder="Имя" /&gt;
+  &lt;input v-model="email" placeholder="Email" /&gt;
+&lt;/template&gt;</code></pre>
+          <p class="mt-2 text-sm text-slate-700">Реактивность сохраняется даже после деструктуризации полей формы.</p>
         </article>
 
         <article class="rounded-xl bg-slate-50 p-4 ring-1 ring-slate-200">
           <h3 class="font-medium">Шаг 2. toRef для одного поля</h3>
-          <pre class="overflow-x-auto rounded-lg bg-slate-900 p-3 text-sm text-slate-100"><code class="language-javascript">import { toRef } from 'vue'
-const notifyRef = toRef(form.settings, 'notify')</code></pre>
+          <pre class="overflow-x-auto rounded-lg bg-slate-900 p-3 text-sm text-slate-100"><code class="language-html">&lt;script setup&gt;
+import { reactive, toRef } from 'vue'
+
+const form = reactive({ settings: { notify: true } })
+const notifyRef = toRef(form.settings, 'notify')
+&lt;/script&gt;
+
+&lt;template&gt;
+  &lt;label&gt;
+    &lt;input v-model="notifyRef" type="checkbox" /&gt;
+    Получать уведомления
+  &lt;/label&gt;
+&lt;/template&gt;</code></pre>
+          <p class="mt-2 text-sm text-slate-700">Удобно, когда нужно работать только с одним вложенным полем как с отдельным ref.</p>
         </article>
 
         <article class="rounded-xl bg-slate-50 p-4 ring-1 ring-slate-200">
           <h3 class="font-medium">Шаг 3. shallowRef для тяжелых объектов</h3>
-          <pre class="overflow-x-auto rounded-lg bg-slate-900 p-3 text-sm text-slate-100"><code class="language-javascript">import { shallowRef } from 'vue'
-const largeSchema = shallowRef({ /* большой объект схемы формы */ })</code></pre>
+          <pre class="overflow-x-auto rounded-lg bg-slate-900 p-3 text-sm text-slate-100"><code class="language-html">&lt;script setup&gt;
+import { shallowRef } from 'vue'
+
+const largeSchema = shallowRef({ fields: [{ id: 1, label: 'Поле 1' }] })
+const replaceSchema = () =&gt; {
+  largeSchema.value = { fields: [{ id: 1, label: 'Обновленное поле' }] }
+}
+&lt;/script&gt;
+
+&lt;template&gt;
+  &lt;button @click="replaceSchema"&gt;Заменить схему&lt;/button&gt;
+  &lt;p&gt;Первое поле: {{ largeSchema.fields[0].label }}&lt;/p&gt;
+&lt;/template&gt;</code></pre>
           <p class="mt-2 text-sm text-slate-700">Vue отслеживает только замену корневого значения, а не каждую вложенность.</p>
         </article>
 
@@ -121,12 +152,16 @@ const largeSchema = shallowRef({ /* большой объект схемы фо�
 
 const externalEditor = markRaw(new SomeEditor())
 const state = reactive({ payload: { a: 1 } })
-const plainPayload = toRaw(state.payload)</code></pre>
+const plainPayload = toRaw(state.payload)
+
+externalEditor.setData(plainPayload)</code></pre>
+          <p class="mt-2 text-sm text-slate-700">Внешний объект не оборачивается в прокси, а библиотека получает обычные данные.</p>
         </article>
 
         <article class="rounded-xl bg-slate-50 p-4 ring-1 ring-slate-200">
           <h3 class="font-medium">Шаг 5. customRef для debounce-поля</h3>
-          <pre class="overflow-x-auto rounded-lg bg-slate-900 p-3 text-sm text-slate-100"><code class="language-javascript">import { customRef } from 'vue'
+          <pre class="overflow-x-auto rounded-lg bg-slate-900 p-3 text-sm text-slate-100"><code class="language-html">&lt;script setup&gt;
+import { customRef } from 'vue'
 
 function useDebouncedRef(initial, delay = 300) {
   let value = initial
@@ -144,7 +179,16 @@ function useDebouncedRef(initial, delay = 300) {
       }, delay)
     }
   }))
-}</code></pre>
+}
+
+const search = useDebouncedRef('')
+&lt;/script&gt;
+
+&lt;template&gt;
+  &lt;input v-model="search" placeholder="Поиск..." /&gt;
+  &lt;p&gt;Запрос: {{ search }}&lt;/p&gt;
+&lt;/template&gt;</code></pre>
+          <p class="mt-2 text-sm text-slate-700">Полезно для поиска: значение стабилизируется с задержкой, без лишних срабатываний.</p>
         </article>
 
         <article class="rounded-xl bg-slate-50 p-4 ring-1 ring-slate-200">
@@ -153,12 +197,14 @@ function useDebouncedRef(initial, delay = 300) {
 
 const scope = effectScope()
 const value = ref('')
+
 scope.run(() => {
   watch(value, (v) => console.log('watch inside scope:', v))
 })
 
-// когда нужно остановить все эффекты сразу
+// когда компонент/сценарий завершен
 scope.stop()</code></pre>
+          <p class="mt-2 text-sm text-slate-700">Все эффекты внутри scope останавливаются одной командой, что упрощает cleanup.</p>
         </article>
 
         <article class="rounded-xl bg-slate-50 p-4 ring-1 ring-slate-200">

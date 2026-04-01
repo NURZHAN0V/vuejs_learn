@@ -122,7 +122,53 @@
       <div class="space-y-5">
         <article class="rounded-xl bg-slate-50 p-4 ring-1 ring-slate-200">
           <h3 class="mb-2 text-lg font-medium">Шаг 1. Создай объект формы</h3>
-          <pre class="overflow-x-auto rounded-lg bg-slate-900 p-3 text-sm text-slate-100"><code class="language-javascript">import { reactive } from 'vue'
+          <pre class="overflow-x-auto rounded-lg bg-slate-900 p-3 text-sm text-slate-100"><code class="language-html">&lt;template&gt;
+  &lt;section class="signup-card"&gt;
+    &lt;h2&gt;Черновик формы&lt;/h2&gt;
+    &lt;pre&gt;{{ form }}&lt;/pre&gt;
+  &lt;/section&gt;
+&lt;/template&gt;
+
+&lt;script setup&gt;
+import { reactive } from 'vue'
+
+const form = reactive({
+  name: '',
+  email: '',
+  age: null,
+  role: 'student',
+  agree: false,
+  bio: ''
+})
+&lt;/script&gt;</code></pre>
+          <p class="mt-2 text-sm text-slate-700">Сразу создаем единый объект состояния формы, чтобы дальше удобно связывать все поля.</p>
+        </article>
+
+        <article class="rounded-xl bg-slate-50 p-4 ring-1 ring-slate-200">
+          <h3 class="mb-2 text-lg font-medium">Шаг 2. Привяжи поля через v-model</h3>
+          <pre class="overflow-x-auto rounded-lg bg-slate-900 p-3 text-sm text-slate-100"><code class="language-html">&lt;template&gt;
+  &lt;section class="signup-card"&gt;
+    &lt;input v-model.trim="form.name" placeholder="Имя" /&gt;
+    &lt;input v-model.trim="form.email" type="email" placeholder="Email" /&gt;
+    &lt;input v-model.number="form.age" type="number" placeholder="Возраст" /&gt;
+
+    &lt;select v-model="form.role"&gt;
+      &lt;option value="student"&gt;Студент&lt;/option&gt;
+      &lt;option value="junior"&gt;Junior&lt;/option&gt;
+      &lt;option value="middle"&gt;Middle&lt;/option&gt;
+    &lt;/select&gt;
+
+    &lt;label&gt;
+      &lt;input v-model="form.agree" type="checkbox" /&gt;
+      Согласен с правилами
+    &lt;/label&gt;
+
+    &lt;p&gt;Имя: {{ form.name }} | Роль: {{ form.role }} | Возраст: {{ form.age }}&lt;/p&gt;
+  &lt;/section&gt;
+&lt;/template&gt;
+
+&lt;script setup&gt;
+import { reactive } from 'vue'
 
 const form = reactive({
   name: '',
@@ -130,40 +176,62 @@ const form = reactive({
   age: null,
   role: 'student',
   agree: false
-})</code></pre>
-        </article>
-
-        <article class="rounded-xl bg-slate-50 p-4 ring-1 ring-slate-200">
-          <h3 class="mb-2 text-lg font-medium">Шаг 2. Привяжи поля через v-model</h3>
-          <pre class="overflow-x-auto rounded-lg bg-slate-900 p-3 text-sm text-slate-100"><code class="language-html">&lt;input v-model.trim="form.name" placeholder="Имя" /&gt;
-&lt;input v-model.trim="form.email" type="email" placeholder="Email" /&gt;
-&lt;input v-model.number="form.age" type="number" placeholder="Возраст" /&gt;
-
-&lt;select v-model="form.role"&gt;
-  &lt;option value="student"&gt;Студент&lt;/option&gt;
-  &lt;option value="junior"&gt;Junior&lt;/option&gt;
-&lt;/select&gt;
-
-&lt;label&gt;
-  &lt;input v-model="form.agree" type="checkbox" /&gt;
-  Согласен с правилами
-&lt;/label&gt;</code></pre>
+})
+&lt;/script&gt;</code></pre>
+          <p class="mt-2 text-sm text-slate-700">Каждое поле синхронизировано с состоянием и сразу отражается в интерфейсе.</p>
         </article>
 
         <article class="rounded-xl bg-slate-50 p-4 ring-1 ring-slate-200">
           <h3 class="mb-2 text-lg font-medium">Шаг 3. Добавь lazy для редких обновлений</h3>
-          <pre class="overflow-x-auto rounded-lg bg-slate-900 p-3 text-sm text-slate-100"><code class="language-html">&lt;textarea
-  v-model.lazy.trim="form.bio"
-  placeholder="Коротко о себе"
-&gt;&lt;/textarea&gt;</code></pre>
+          <pre class="overflow-x-auto rounded-lg bg-slate-900 p-3 text-sm text-slate-100"><code class="language-html">&lt;template&gt;
+  &lt;section class="signup-card"&gt;
+    &lt;textarea
+      v-model.lazy.trim="form.bio"
+      placeholder="Коротко о себе"
+    &gt;&lt;/textarea&gt;
+
+    &lt;p&gt;Био сохранится после blur/change:&lt;/p&gt;
+    &lt;p&gt;{{ form.bio || 'Пока пусто' }}&lt;/p&gt;
+  &lt;/section&gt;
+&lt;/template&gt;
+
+&lt;script setup&gt;
+import { reactive } from 'vue'
+
+const form = reactive({
+  bio: ''
+})
+&lt;/script&gt;</code></pre>
           <p class="mt-2 text-sm text-slate-700">Значение обновится после потери фокуса или change, а не на каждый символ.</p>
         </article>
 
         <article class="rounded-xl bg-slate-50 p-4 ring-1 ring-slate-200">
           <h3 class="mb-2 text-lg font-medium">Шаг 4. Валидация на клиенте</h3>
-          <pre class="overflow-x-auto rounded-lg bg-slate-900 p-3 text-sm text-slate-100"><code class="language-javascript">import { computed } from 'vue'
+          <pre class="overflow-x-auto rounded-lg bg-slate-900 p-3 text-sm text-slate-100"><code class="language-html">&lt;template&gt;
+  &lt;section class="signup-card"&gt;
+    &lt;input v-model.trim="form.name" placeholder="Имя" /&gt;
+    &lt;input v-model.trim="form.email" type="email" placeholder="Email" /&gt;
+    &lt;label&gt;
+      &lt;input v-model="form.agree" type="checkbox" /&gt;
+      Согласен с правилами
+    &lt;/label&gt;
 
-const errors = computed(() => {
+    &lt;ul v-if="errors.length"&gt;
+      &lt;li v-for="error in errors" :key="error"&gt;{{ error }}&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/section&gt;
+&lt;/template&gt;
+
+&lt;script setup&gt;
+import { computed, reactive } from 'vue'
+
+const form = reactive({
+  name: '',
+  email: '',
+  agree: false
+})
+
+const errors = computed(() =&gt; {
   const list = []
   if (!form.name) list.push('Имя обязательно')
   if (!form.email.includes('@')) list.push('Email некорректный')
@@ -171,33 +239,72 @@ const errors = computed(() => {
   return list
 })
 
-const isValid = computed(() => errors.value.length === 0)</code></pre>
+const isValid = computed(() =&gt; errors.value.length === 0)
+&lt;/script&gt;</code></pre>
+          <p class="mt-2 text-sm text-slate-700">Ошибки считаются реактивно и сразу показываются пользователю по мере заполнения.</p>
         </article>
 
         <article class="rounded-xl bg-slate-50 p-4 ring-1 ring-slate-200">
           <h3 class="mb-2 text-lg font-medium">Шаг 5. Отправка формы без перезагрузки</h3>
-          <pre class="overflow-x-auto rounded-lg bg-slate-900 p-3 text-sm text-slate-100"><code class="language-html">&lt;form @submit.prevent="submitForm"&gt;
-  ...
-  &lt;button :disabled="!isValid" type="submit"&gt;Зарегистрироваться&lt;/button&gt;
-&lt;/form&gt;</code></pre>
-          <pre class="mt-3 overflow-x-auto rounded-lg bg-slate-900 p-3 text-sm text-slate-100"><code class="language-javascript">const submitForm = () => {
+          <pre class="overflow-x-auto rounded-lg bg-slate-900 p-3 text-sm text-slate-100"><code class="language-html">&lt;template&gt;
+  &lt;form class="signup-card" @submit.prevent="submitForm"&gt;
+    &lt;input v-model.trim="form.name" placeholder="Имя" /&gt;
+    &lt;input v-model.trim="form.email" type="email" placeholder="Email" /&gt;
+    &lt;button :disabled="!isValid" type="submit"&gt;Зарегистрироваться&lt;/button&gt;
+  &lt;/form&gt;
+
+  &lt;p v-if="submitted"&gt;Форма отправлена: {{ submitted }}&lt;/p&gt;
+&lt;/template&gt;
+
+&lt;script setup&gt;
+import { computed, reactive, ref } from 'vue'
+
+const form = reactive({ name: '', email: '' })
+const submitted = ref('')
+
+const isValid = computed(() =&gt; form.name.length &gt;= 2 && form.email.includes('@'))
+
+const submitForm = () =&gt; {
   if (!isValid.value) return
-  console.log('Форма отправлена:', JSON.stringify(form))
-}</code></pre>
+  submitted.value = JSON.stringify(form)
+}
+&lt;/script&gt;</code></pre>
+          <p class="mt-2 text-sm text-slate-700">Кнопка активна только для валидных данных, отправка идет без перезагрузки страницы.</p>
         </article>
 
         <article class="rounded-xl bg-slate-50 p-4 ring-1 ring-slate-200">
           <h3 class="mb-2 text-lg font-medium">Шаг 6. v-model в дочернем компоненте через defineModel</h3>
           <pre class="overflow-x-auto rounded-lg bg-slate-900 p-3 text-sm text-slate-100"><code class="language-html">&lt;!-- Parent.vue --&gt;
-&lt;CustomInput v-model="form.name" /&gt;</code></pre>
+&lt;template&gt;
+  &lt;CustomInput v-model="form.name" label="Имя" /&gt;
+  &lt;p&gt;Значение из дочернего поля: {{ form.name }}&lt;/p&gt;
+&lt;/template&gt;
+
+&lt;script setup&gt;
+import { reactive } from 'vue'
+import CustomInput from './CustomInput.vue'
+
+const form = reactive({ name: '' })
+&lt;/script&gt;</code></pre>
           <pre class="mt-3 overflow-x-auto rounded-lg bg-slate-900 p-3 text-sm text-slate-100"><code class="language-html">&lt;!-- CustomInput.vue --&gt;
 &lt;script setup&gt;
+defineProps({
+  label: {
+    type: String,
+    default: ''
+  }
+})
+
 const model = defineModel()
 &lt;/script&gt;
 
 &lt;template&gt;
-  &lt;input v-model="model" /&gt;
+  &lt;label&gt;
+    {{ label }}
+    &lt;input v-model="model" /&gt;
+  &lt;/label&gt;
 &lt;/template&gt;</code></pre>
+          <p class="mt-2 text-sm text-slate-700">Так `v-model` работает между компонентами так же удобно, как на обычном input.</p>
         </article>
       </div>
     </section>

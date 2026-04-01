@@ -96,7 +96,8 @@
       <div class="space-y-5">
         <article class="rounded-xl bg-slate-50 p-4 ring-1 ring-slate-200">
           <h3 class="font-medium">Шаг 1. Опиши доменные типы</h3>
-          <pre class="overflow-x-auto rounded-lg bg-slate-900 p-3 text-sm text-slate-100"><code class="language-typescript">export interface Product {
+          <pre class="overflow-x-auto rounded-lg bg-slate-900 p-3 text-sm text-slate-100"><code class="language-typescript">// types/catalog.ts
+export interface Product {
   id: number
   title: string
   price: number
@@ -107,55 +108,72 @@ export interface ProductsResponse {
   items: Product[]
   total: number
 }</code></pre>
+          <p class="mt-2 text-sm text-slate-700">Единая модель данных устраняет расхождения между компонентами, store и API.</p>
         </article>
 
         <article class="rounded-xl bg-slate-50 p-4 ring-1 ring-slate-200">
           <h3 class="font-medium">Шаг 2. Типизируй ref/reactive/computed</h3>
           <pre class="overflow-x-auto rounded-lg bg-slate-900 p-3 text-sm text-slate-100"><code class="language-typescript">import { ref, reactive, computed } from 'vue'
-import type { Product } from './types'
+import type { Product } from './types/catalog'
 
 const products = ref<Product[]>([])
 const filters = reactive({ minPrice: 0, onlyInStock: false })
+
 const visibleProducts = computed(() =>
-  products.value.filter(p => p.price >= filters.minPrice && (!filters.onlyInStock || p.inStock))
+  products.value.filter(
+    (p) => p.price >= filters.minPrice && (!filters.onlyInStock || p.inStock)
+  )
 )</code></pre>
+          <p class="mt-2 text-sm text-slate-700">IDE сразу подсказывает структуру и подсвечивает ошибки в фильтрах и вычислениях.</p>
         </article>
 
         <article class="rounded-xl bg-slate-50 p-4 ring-1 ring-slate-200">
           <h3 class="font-medium">Шаг 3. Типизируй props/emits/slots</h3>
           <pre class="overflow-x-auto rounded-lg bg-slate-900 p-3 text-sm text-slate-100"><code class="language-typescript">&lt;script setup lang="ts"&gt;
-import type { Product } from '../types'
+import type { Product } from '../types/catalog'
 
 const props = defineProps&lt;{ product: Product }&gt()
 const emit = defineEmits&lt;{ (e: 'add-to-cart', id: number): void }&gt()
 defineSlots&lt;{ default(props: { product: Product }): any }&gt()
-&lt;/script&gt;</code></pre>
+&lt;/script&gt;
+
+&lt;template&gt;
+  &lt;h3&gt;{{ props.product.title }}&lt;/h3&gt;
+  &lt;button @click="emit('add-to-cart', props.product.id)"&gt;В корзину&lt;/button&gt;
+&lt;/template&gt;</code></pre>
+          <p class="mt-2 text-sm text-slate-700">Контракт компонента становится явным и безопасным для родителей.</p>
         </article>
 
         <article class="rounded-xl bg-slate-50 p-4 ring-1 ring-slate-200">
           <h3 class="font-medium">Шаг 4. Тип API-ответа и fetch</h3>
-          <pre class="overflow-x-auto rounded-lg bg-slate-900 p-3 text-sm text-slate-100"><code class="language-typescript">import type { ProductsResponse } from './types'
+          <pre class="overflow-x-auto rounded-lg bg-slate-900 p-3 text-sm text-slate-100"><code class="language-typescript">import type { ProductsResponse } from './types/catalog'
 
 async function loadProducts(): Promise<void> {
   const res = await fetch('/api/products')
+  if (!res.ok) throw new Error('Ошибка загрузки каталога')
   const data: ProductsResponse = await res.json()
   products.value = data.items
 }</code></pre>
+          <p class="mt-2 text-sm text-slate-700">Тип ответа фиксирует ожидания к API и сокращает runtime-сюрпризы.</p>
         </article>
 
         <article class="rounded-xl bg-slate-50 p-4 ring-1 ring-slate-200">
           <h3 class="font-medium">Шаг 5. Типизация Pinia store</h3>
           <pre class="overflow-x-auto rounded-lg bg-slate-900 p-3 text-sm text-slate-100"><code class="language-typescript">import { defineStore } from 'pinia'
-import { ref } from 'vue'
-import type { Product } from './types'
+import { computed, ref } from 'vue'
+import type { Product } from './types/catalog'
 
 export const useCatalogStore = defineStore('catalog', () => {
   const items = ref<Product[]>([])
+  const inStockCount = computed(() => items.value.filter((i) => i.inStock).length)
+
   function setItems(next: Product[]) {
     items.value = next
   }
-  return { items, setItems }
+
+  return { items, inStockCount, setItems }
 })</code></pre>
+          <p class="mt-2 text-sm text-slate-700">Store получает строгие типы и безопасный публичный API для остальных модулей.</p>
         </article>
 
         <article class="rounded-xl bg-slate-50 p-4 ring-1 ring-slate-200">
@@ -166,8 +184,14 @@ const routes = [
     path: '/catalog',
     component: () => import('./pages/CatalogPage.vue'),
     meta: { requiresAuth: false as boolean }
+  },
+  {
+    path: '/checkout',
+    component: () => import('./pages/CheckoutPage.vue'),
+    meta: { requiresAuth: true as boolean }
   }
 ]</code></pre>
+          <p class="mt-2 text-sm text-slate-700">Meta-поля становятся частью типизированного контракта маршрутов.</p>
         </article>
 
         <article class="rounded-xl bg-slate-50 p-4 ring-1 ring-slate-200">
@@ -176,9 +200,10 @@ const routes = [
 type Nullable&lt;T&gt; = T | null
 type ApiState&lt;T&gt; = {
   data: Nullable&lt;T&gt;
-  loading: boolean;
+  loading: boolean
   error: Nullable&lt;string&gt;
 }</code></pre>
+          <p class="mt-2 text-sm text-slate-700">Переиспользуемые utility-типы уменьшают дублирование и унифицируют состояние API.</p>
         </article>
       </div>
     </section>

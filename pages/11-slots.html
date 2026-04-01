@@ -121,10 +121,13 @@
   &lt;/section&gt;
 &lt;/template&gt;</code></pre>
           <pre class="mt-3 overflow-x-auto rounded-lg bg-slate-900 p-3 text-sm text-slate-100"><code class="language-html">&lt;!-- Parent.vue --&gt;
-&lt;BaseCard&gt;
-  &lt;h3&gt;Карточка пользователя&lt;/h3&gt;
-  &lt;p&gt;Контент передан через слот&lt;/p&gt;
-&lt;/BaseCard&gt;</code></pre>
+&lt;template&gt;
+  &lt;BaseCard&gt;
+    &lt;h3&gt;Карточка пользователя&lt;/h3&gt;
+    &lt;p&gt;Контент передан через слот&lt;/p&gt;
+  &lt;/BaseCard&gt;
+&lt;/template&gt;</code></pre>
+          <p class="mt-2 text-sm text-slate-700">Базовый runnable-кейс: один компонент-обертка и полностью настраиваемое содержимое снаружи.</p>
         </article>
 
         <article class="rounded-xl bg-slate-50 p-4 ring-1 ring-slate-200">
@@ -137,7 +140,8 @@
     &lt;footer&gt;&lt;slot name="footer" /&gt;&lt;/footer&gt;
   &lt;/div&gt;
 &lt;/template&gt;</code></pre>
-          <pre class="mt-3 overflow-x-auto rounded-lg bg-slate-900 p-3 text-sm text-slate-100"><code class="language-html">&lt;BaseModal&gt;
+          <pre class="mt-3 overflow-x-auto rounded-lg bg-slate-900 p-3 text-sm text-slate-100"><code class="language-html">&lt;!-- Parent.vue --&gt;
+&lt;BaseModal&gt;
   &lt;template #header&gt;Подтверждение&lt;/template&gt;
   Вы точно хотите удалить запись?
   &lt;template #footer&gt;
@@ -145,6 +149,7 @@
     &lt;button&gt;Удалить&lt;/button&gt;
   &lt;/template&gt;
 &lt;/BaseModal&gt;</code></pre>
+          <p class="mt-2 text-sm text-slate-700">Такой формат сразу показывает, как собрать универсальное модальное окно под разные сценарии.</p>
         </article>
 
         <article class="rounded-xl bg-slate-50 p-4 ring-1 ring-slate-200">
@@ -155,13 +160,17 @@
 &lt;/template&gt;
 
 &lt;script setup&gt;
-const user = { name: 'Анна', age: 24 }
-const isOnline = true
+import { reactive, ref } from 'vue'
+
+const user = reactive({ name: 'Анна', age: 24 })
+const isOnline = ref(true)
 &lt;/script&gt;</code></pre>
-          <pre class="mt-3 overflow-x-auto rounded-lg bg-slate-900 p-3 text-sm text-slate-100"><code class="language-html">&lt;UserInfo v-slot="{ user, isOnline }"&gt;
+          <pre class="mt-3 overflow-x-auto rounded-lg bg-slate-900 p-3 text-sm text-slate-100"><code class="language-html">&lt;!-- Parent.vue --&gt;
+&lt;UserInfo v-slot="{ user, isOnline }"&gt;
   &lt;p&gt;{{ user.name }} ({{ user.age }})&lt;/p&gt;
   &lt;p&gt;Статус: {{ isOnline ? 'online' : 'offline' }}&lt;/p&gt;
 &lt;/UserInfo&gt;</code></pre>
+          <p class="mt-2 text-sm text-slate-700">Ребенок отдает данные, а родитель полностью контролирует их отрисовку.</p>
         </article>
 
         <article class="rounded-xl bg-slate-50 p-4 ring-1 ring-slate-200">
@@ -172,25 +181,39 @@ const isOnline = true
     &lt;slot&gt;Нет данных для отображения&lt;/slot&gt;
   &lt;/div&gt;
 &lt;/template&gt;</code></pre>
+          <pre class="mt-3 overflow-x-auto rounded-lg bg-slate-900 p-3 text-sm text-slate-100"><code class="language-html">&lt;!-- Parent.vue --&gt;
+&lt;EmptyStateCard /&gt;
+&lt;EmptyStateCard&gt;
+  &lt;p&gt;Данные загружены, можно показывать таблицу&lt;/p&gt;
+&lt;/EmptyStateCard&gt;</code></pre>
           <p class="mt-2 text-sm text-slate-700">Если слот не передан, компонент покажет сообщение по умолчанию.</p>
         </article>
 
         <article class="rounded-xl bg-slate-50 p-4 ring-1 ring-slate-200">
           <h3 class="mb-2 text-lg font-medium">Шаг 5. Комбинация Card + Modal</h3>
-          <pre class="overflow-x-auto rounded-lg bg-slate-900 p-3 text-sm text-slate-100"><code class="language-html">&lt;BaseCard&gt;
-  &lt;template #default&gt;
-    &lt;h3&gt;Профиль&lt;/h3&gt;
-    &lt;button @click="isModalOpen = true"&gt;Открыть детали&lt;/button&gt;
-  &lt;/template&gt;
-&lt;/BaseCard&gt;
+          <pre class="overflow-x-auto rounded-lg bg-slate-900 p-3 text-sm text-slate-100"><code class="language-html">&lt;script setup&gt;
+import { ref } from 'vue'
 
-&lt;BaseModal v-if="isModalOpen"&gt;
-  &lt;template #header&gt;Детали профиля&lt;/template&gt;
-  Дополнительная информация
-  &lt;template #footer&gt;
-    &lt;button @click="isModalOpen = false"&gt;Закрыть&lt;/button&gt;
-  &lt;/template&gt;
-&lt;/BaseModal&gt;</code></pre>
+const isModalOpen = ref(false)
+&lt;/script&gt;
+
+&lt;template&gt;
+  &lt;BaseCard&gt;
+    &lt;template #default&gt;
+      &lt;h3&gt;Профиль&lt;/h3&gt;
+      &lt;button @click="isModalOpen = true"&gt;Открыть детали&lt;/button&gt;
+    &lt;/template&gt;
+  &lt;/BaseCard&gt;
+
+  &lt;BaseModal v-if="isModalOpen"&gt;
+    &lt;template #header&gt;Детали профиля&lt;/template&gt;
+    Дополнительная информация
+    &lt;template #footer&gt;
+      &lt;button @click="isModalOpen = false"&gt;Закрыть&lt;/button&gt;
+    &lt;/template&gt;
+  &lt;/BaseModal&gt;
+&lt;/template&gt;</code></pre>
+          <p class="mt-2 text-sm text-slate-700">Итоговый пример объединяет слоты в цельный UI-сценарий: карточка запускает модалку с настраиваемыми зонами.</p>
         </article>
       </div>
     </section>

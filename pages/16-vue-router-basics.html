@@ -120,15 +120,18 @@
           <h3 class="mb-2 text-lg font-medium">Шаг 1. Создай router/index.js</h3>
           <pre class="overflow-x-auto rounded-lg bg-slate-900 p-3 text-sm text-slate-100"><code class="language-javascript">import { createRouter, createWebHistory } from 'vue-router'
 import HomePage from '../pages/HomePage.vue'
+import DashboardPage from '../pages/DashboardPage.vue'
 
 const routes = [
-  { path: '/', name: 'home', component: HomePage }
+  { path: '/', name: 'home', component: HomePage },
+  { path: '/dashboard', name: 'dashboard', component: DashboardPage }
 ]
 
 export const router = createRouter({
   history: createWebHistory(),
   routes
 })</code></pre>
+          <p class="mt-2 text-sm text-slate-700">Базовый роутер уже дает рабочую навигацию между двумя страницами.</p>
         </article>
 
         <article class="rounded-xl bg-slate-50 p-4 ring-1 ring-slate-200">
@@ -140,14 +143,19 @@ export const router = createRouter({
   &lt;/nav&gt;
   &lt;RouterView /&gt;
 &lt;/template&gt;</code></pre>
+          <p class="mt-2 text-sm text-slate-700">Минимальный layout SPA: меню постоянно, а контент меняется в <code>RouterView</code>.</p>
         </article>
 
         <article class="rounded-xl bg-slate-50 p-4 ring-1 ring-slate-200">
           <h3 class="mb-2 text-lg font-medium">Шаг 3. Добавь динамический маршрут</h3>
-          <pre class="overflow-x-auto rounded-lg bg-slate-900 p-3 text-sm text-slate-100"><code class="language-javascript">{ path: '/posts/:id', name: 'post-details', component: () => import('../pages/PostDetails.vue') }</code></pre>
-          <pre class="mt-3 overflow-x-auto rounded-lg bg-slate-900 p-3 text-sm text-slate-100"><code class="language-javascript">import { useRoute } from 'vue-router'
+          <pre class="overflow-x-auto rounded-lg bg-slate-900 p-3 text-sm text-slate-100"><code class="language-javascript">// router/index.js
+{ path: '/posts/:id', name: 'post-details', component: () => import('../pages/PostDetails.vue') }</code></pre>
+          <pre class="mt-3 overflow-x-auto rounded-lg bg-slate-900 p-3 text-sm text-slate-100"><code class="language-javascript">// PostDetails.vue
+import { computed } from 'vue'
+import { useRoute } from 'vue-router'
 const route = useRoute()
-const postId = route.params.id</code></pre>
+const postId = computed(() => route.params.id)</code></pre>
+          <p class="mt-2 text-sm text-slate-700">Один компонент обслуживает много URL с разными id.</p>
         </article>
 
         <article class="rounded-xl bg-slate-50 p-4 ring-1 ring-slate-200">
@@ -160,12 +168,22 @@ const postId = route.params.id</code></pre>
     { path: 'settings', name: 'dashboard-settings', component: () => import('../pages/DashboardSettings.vue') }
   ]
 }</code></pre>
+          <pre class="mt-3 overflow-x-auto rounded-lg bg-slate-900 p-3 text-sm text-slate-100"><code class="language-html">&lt;!-- DashboardLayout.vue --&gt;
+&lt;template&gt;
+  &lt;aside&gt;
+    &lt;RouterLink to="/dashboard"&gt;Обзор&lt;/RouterLink&gt;
+    &lt;RouterLink to="/dashboard/settings"&gt;Настройки&lt;/RouterLink&gt;
+  &lt;/aside&gt;
+  &lt;section&gt;&lt;RouterView /&gt;&lt;/section&gt;
+&lt;/template&gt;</code></pre>
+          <p class="mt-2 text-sm text-slate-700">Так строят секции кабинета с общим каркасом и вложенными экранами.</p>
         </article>
 
         <article class="rounded-xl bg-slate-50 p-4 ring-1 ring-slate-200">
           <h3 class="mb-2 text-lg font-medium">Шаг 5. Редирект и 404</h3>
           <pre class="overflow-x-auto rounded-lg bg-slate-900 p-3 text-sm text-slate-100"><code class="language-javascript">{ path: '/profile', redirect: '/dashboard' },
 { path: '/:pathMatch(.*)*', name: 'not-found', component: () => import('../pages/NotFound.vue') }</code></pre>
+          <p class="mt-2 text-sm text-slate-700">Пользователь не теряется: старый путь редиректится, неизвестный URL ведет на 404.</p>
         </article>
 
         <article class="rounded-xl bg-slate-50 p-4 ring-1 ring-slate-200">
@@ -178,9 +196,10 @@ const postId = route.params.id</code></pre>
           <pre class="mt-3 overflow-x-auto rounded-lg bg-slate-900 p-3 text-sm text-slate-100"><code class="language-javascript">router.beforeEach((to) => {
   const isAuthenticated = Boolean(localStorage.getItem('token'))
   if (to.meta.requiresAuth && !isAuthenticated) {
-    return { name: 'home' }
+    return { name: 'home', query: { redirect: to.fullPath } }
   }
 })</code></pre>
+          <p class="mt-2 text-sm text-slate-700">Guard централизованно защищает приватные страницы и сохраняет путь возврата.</p>
         </article>
 
         <article class="rounded-xl bg-slate-50 p-4 ring-1 ring-slate-200">
@@ -188,7 +207,7 @@ const postId = route.params.id</code></pre>
           <pre class="overflow-x-auto rounded-lg bg-slate-900 p-3 text-sm text-slate-100"><code class="language-javascript">{
   path: '/danger-zone',
   component: () => import('../pages/DangerZone.vue'),
-  beforeEnter: (to, from) => {
+  beforeEnter: () => {
     const confirmed = window.confirm('Перейти в опасную зону?')
     return confirmed || false
   }
@@ -201,6 +220,7 @@ const postId = route.params.id</code></pre>
     return { top: 0 }
   }
 })</code></pre>
+          <p class="mt-2 text-sm text-slate-700">Локальный guard подходит для отдельных страниц, а scroll behavior улучшает UX переходов.</p>
         </article>
       </div>
     </section>

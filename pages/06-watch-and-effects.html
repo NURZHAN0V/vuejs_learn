@@ -118,75 +118,185 @@
       <div class="space-y-5">
         <article class="rounded-xl bg-slate-50 p-4 ring-1 ring-slate-200">
           <h3 class="mb-2 text-lg font-medium">Шаг 1. Состояние настроек</h3>
-          <pre class="overflow-x-auto rounded-lg bg-slate-900 p-3 text-sm text-slate-100"><code class="language-javascript">import { ref, reactive } from 'vue'
+          <pre class="overflow-x-auto rounded-lg bg-slate-900 p-3 text-sm text-slate-100"><code class="language-html">&lt;template&gt;
+  &lt;section class="settings-card"&gt;
+    &lt;h2&gt;Настройки профиля&lt;/h2&gt;
+    &lt;p&gt;Тема: {{ theme }}&lt;/p&gt;
+    &lt;p&gt;Язык: {{ settings.language }}&lt;/p&gt;
+    &lt;p&gt;Уведомления: {{ settings.notifications ? 'Включены' : 'Выключены' }}&lt;/p&gt;
+  &lt;/section&gt;
+&lt;/template&gt;
+
+&lt;script setup&gt;
+import { reactive, ref } from 'vue'
 
 const theme = ref('light')
 const settings = reactive({
   language: 'ru',
   notifications: true
-})</code></pre>
+})
+&lt;/script&gt;</code></pre>
+          <p class="mt-2 text-sm text-slate-700">Стартовый компонент уже отображает все данные, за которыми будем наблюдать дальше.</p>
         </article>
 
         <article class="rounded-xl bg-slate-50 p-4 ring-1 ring-slate-200">
           <h3 class="mb-2 text-lg font-medium">Шаг 2. Сохраняй конкретное значение через watch</h3>
-          <pre class="overflow-x-auto rounded-lg bg-slate-900 p-3 text-sm text-slate-100"><code class="language-javascript">import { watch } from 'vue'
+          <pre class="overflow-x-auto rounded-lg bg-slate-900 p-3 text-sm text-slate-100"><code class="language-html">&lt;template&gt;
+  &lt;section class="settings-card"&gt;
+    &lt;label&gt;Тема&lt;/label&gt;
+    &lt;select v-model="theme"&gt;
+      &lt;option value="light"&gt;light&lt;/option&gt;
+      &lt;option value="dark"&gt;dark&lt;/option&gt;
+    &lt;/select&gt;
+    &lt;p&gt;Текущая тема: {{ theme }}&lt;/p&gt;
+  &lt;/section&gt;
+&lt;/template&gt;
 
-watch(theme, (newTheme) => {
+&lt;script setup&gt;
+import { ref, watch } from 'vue'
+
+const theme = ref('light')
+
+watch(theme, (newTheme) =&gt; {
   localStorage.setItem('theme', newTheme)
-})</code></pre>
+})
+&lt;/script&gt;</code></pre>
           <p class="mt-2 text-sm text-slate-700">Это классический сценарий: есть один источник и четкая реакция на него.</p>
         </article>
 
         <article class="rounded-xl bg-slate-50 p-4 ring-1 ring-slate-200">
           <h3 class="mb-2 text-lg font-medium">Шаг 3. Наблюдение за объектом + deep</h3>
-          <pre class="overflow-x-auto rounded-lg bg-slate-900 p-3 text-sm text-slate-100"><code class="language-javascript">watch(
-  () => settings,
-  (newSettings) => {
+          <pre class="overflow-x-auto rounded-lg bg-slate-900 p-3 text-sm text-slate-100"><code class="language-html">&lt;template&gt;
+  &lt;section class="settings-card"&gt;
+    &lt;label&gt;Язык&lt;/label&gt;
+    &lt;select v-model="settings.language"&gt;
+      &lt;option value="ru"&gt;Русский&lt;/option&gt;
+      &lt;option value="en"&gt;English&lt;/option&gt;
+    &lt;/select&gt;
+
+    &lt;label&gt;
+      &lt;input v-model="settings.notifications" type="checkbox" /&gt;
+      Уведомления
+    &lt;/label&gt;
+  &lt;/section&gt;
+&lt;/template&gt;
+
+&lt;script setup&gt;
+import { reactive, watch } from 'vue'
+
+const settings = reactive({
+  language: 'ru',
+  notifications: true
+})
+
+watch(
+  () =&gt; settings,
+  (newSettings) =&gt; {
     localStorage.setItem('settings', JSON.stringify(newSettings))
   },
   { deep: true }
-)</code></pre>
+)
+&lt;/script&gt;</code></pre>
           <p class="mt-2 text-sm text-slate-700">Используй глубину только при необходимости, иначе будет лишняя нагрузка.</p>
         </article>
 
         <article class="rounded-xl bg-slate-50 p-4 ring-1 ring-slate-200">
           <h3 class="mb-2 text-lg font-medium">Шаг 4. immediate и flush</h3>
-          <pre class="overflow-x-auto rounded-lg bg-slate-900 p-3 text-sm text-slate-100"><code class="language-javascript">watch(
+          <pre class="overflow-x-auto rounded-lg bg-slate-900 p-3 text-sm text-slate-100"><code class="language-html">&lt;template&gt;
+  &lt;section class="settings-card"&gt;
+    &lt;button @click="theme = 'light'"&gt;Light&lt;/button&gt;
+    &lt;button @click="theme = 'dark'"&gt;Dark&lt;/button&gt;
+    &lt;p&gt;Тема: {{ theme }}&lt;/p&gt;
+    &lt;p&gt;Лог: {{ watchLog }}&lt;/p&gt;
+  &lt;/section&gt;
+&lt;/template&gt;
+
+&lt;script setup&gt;
+import { ref, watch } from 'vue'
+
+const theme = ref('light')
+const watchLog = ref('')
+
+watch(
   theme,
-  () => {
-    console.log('Тема обновлена')
+  () =&gt; {
+    watchLog.value = `Тема обновлена: ${theme.value}`
   },
   {
     immediate: true,
     flush: 'post'
   }
-)</code></pre>
+)
+&lt;/script&gt;</code></pre>
           <p class="mt-2 text-sm text-slate-700"><code>immediate</code> запускает обработчик сразу, <code>flush: 'post'</code> — после обновления DOM.</p>
         </article>
 
         <article class="rounded-xl bg-slate-50 p-4 ring-1 ring-slate-200">
           <h3 class="mb-2 text-lg font-medium">Шаг 5. watchEffect и очистка эффекта</h3>
-          <pre class="overflow-x-auto rounded-lg bg-slate-900 p-3 text-sm text-slate-100"><code class="language-javascript">import { watchEffect } from 'vue'
+          <pre class="overflow-x-auto rounded-lg bg-slate-900 p-3 text-sm text-slate-100"><code class="language-html">&lt;template&gt;
+  &lt;section class="settings-card"&gt;
+    &lt;input v-model="query" placeholder="Поиск языка..." /&gt;
+    &lt;p&gt;Черновик: {{ query }}&lt;/p&gt;
+    &lt;p&gt;Автосохранено: {{ savedQuery }}&lt;/p&gt;
+  &lt;/section&gt;
+&lt;/template&gt;
 
-watchEffect((onCleanup) => {
-  const timerId = setTimeout(() => {
-    localStorage.setItem('preview-language', settings.language)
+&lt;script setup&gt;
+import { ref, watchEffect } from 'vue'
+
+const query = ref('')
+const savedQuery = ref('')
+
+watchEffect((onCleanup) =&gt; {
+  const timerId = setTimeout(() =&gt; {
+    savedQuery.value = query.value
+    localStorage.setItem('search-query', query.value)
   }, 500)
 
-  onCleanup(() => clearTimeout(timerId))
-})</code></pre>
+  onCleanup(() =&gt; clearTimeout(timerId))
+})
+&lt;/script&gt;</code></pre>
           <p class="mt-2 text-sm text-slate-700">Очистка удаляет старый таймер, если зависимость изменилась до его выполнения.</p>
         </article>
 
         <article class="rounded-xl bg-slate-50 p-4 ring-1 ring-slate-200">
           <h3 class="mb-2 text-lg font-medium">Шаг 6. Загрузка сохраненных значений при старте</h3>
-          <pre class="overflow-x-auto rounded-lg bg-slate-900 p-3 text-sm text-slate-100"><code class="language-javascript">const savedTheme = localStorage.getItem('theme')
+          <pre class="overflow-x-auto rounded-lg bg-slate-900 p-3 text-sm text-slate-100"><code class="language-html">&lt;template&gt;
+  &lt;section class="settings-card"&gt;
+    &lt;p&gt;Тема: {{ theme }}&lt;/p&gt;
+    &lt;p&gt;Язык: {{ settings.language }}&lt;/p&gt;
+    &lt;label&gt;
+      &lt;input v-model="settings.notifications" type="checkbox" /&gt;
+      Уведомления
+    &lt;/label&gt;
+  &lt;/section&gt;
+&lt;/template&gt;
+
+&lt;script setup&gt;
+import { reactive, ref, watch } from 'vue'
+
+const theme = ref('light')
+const settings = reactive({
+  language: 'ru',
+  notifications: true
+})
+
+const savedTheme = localStorage.getItem('theme')
 if (savedTheme) theme.value = savedTheme
 
 const savedSettings = localStorage.getItem('settings')
 if (savedSettings) {
   Object.assign(settings, JSON.parse(savedSettings))
-}</code></pre>
+}
+
+watch(theme, (newTheme) =&gt; localStorage.setItem('theme', newTheme), { immediate: true })
+watch(
+  () =&gt; settings,
+  (newSettings) =&gt; localStorage.setItem('settings', JSON.stringify(newSettings)),
+  { deep: true, immediate: true }
+)
+&lt;/script&gt;</code></pre>
+          <p class="mt-2 text-sm text-slate-700">Финальный шаг: настройки загружаются при старте и автоматически сохраняются при каждом изменении.</p>
         </article>
       </div>
     </section>

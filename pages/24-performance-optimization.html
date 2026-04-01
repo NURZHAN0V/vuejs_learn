@@ -96,26 +96,41 @@
       <div class="space-y-5">
         <article class="rounded-xl bg-slate-50 p-4 ring-1 ring-slate-200">
           <h3 class="font-medium">Шаг 1. Зафиксируй baseline (до оптимизации)</h3>
-          <pre class="overflow-x-auto rounded-lg bg-slate-900 p-3 text-sm text-slate-100"><code class="language-javascript">import { onUpdated } from 'vue'
+          <pre class="overflow-x-auto rounded-lg bg-slate-900 p-3 text-sm text-slate-100"><code class="language-html">&lt;script setup&gt;
+import { onUpdated, ref } from 'vue'
+
+const renderCount = ref(0)
 onUpdated(() => {
-  console.log('render')
-})</code></pre>
-          <p class="mt-2 text-sm text-slate-700">Сначала пойми, как часто рендерится компонент и где лаги.</p>
+  renderCount.value += 1
+  console.log('render', renderCount.value)
+})
+&lt;/script&gt;
+
+&lt;template&gt;
+  &lt;p&gt;Количество перерисовок: {{ renderCount }}&lt;/p&gt;
+&lt;/template&gt;</code></pre>
+          <p class="mt-2 text-sm text-slate-700">Сначала измеряем текущее поведение, чтобы понимать эффект от оптимизаций.</p>
         </article>
 
         <article class="rounded-xl bg-slate-50 p-4 ring-1 ring-slate-200">
           <h3 class="font-medium">Шаг 2. Lazy loading тяжелой страницы</h3>
-          <pre class="overflow-x-auto rounded-lg bg-slate-900 p-3 text-sm text-slate-100"><code class="language-javascript">const routes = [
+          <pre class="overflow-x-auto rounded-lg bg-slate-900 p-3 text-sm text-slate-100"><code class="language-javascript">// router.ts
+const routes = [
   {
     path: '/analytics',
     component: () => import('./pages/AnalyticsPage.vue')
   }
 ]</code></pre>
+          <p class="mt-2 text-sm text-slate-700">Тяжелая аналитика грузится только при переходе, а старт приложения становится быстрее.</p>
         </article>
 
         <article class="rounded-xl bg-slate-50 p-4 ring-1 ring-slate-200">
           <h3 class="font-medium">Шаг 3. v-once для статичных блоков</h3>
-          <pre class="overflow-x-auto rounded-lg bg-slate-900 p-3 text-sm text-slate-100"><code class="language-html">&lt;h1 v-once&gt;Каталог товаров&lt;/h1&gt;</code></pre>
+          <pre class="overflow-x-auto rounded-lg bg-slate-900 p-3 text-sm text-slate-100"><code class="language-html">&lt;template&gt;
+  &lt;h1 v-once&gt;Каталог товаров&lt;/h1&gt;
+  &lt;p&gt;Текущий фильтр: {{ filter }}&lt;/p&gt;
+&lt;/template&gt;</code></pre>
+          <p class="mt-2 text-sm text-slate-700">Статичный заголовок больше не участвует в последующих обновлениях.</p>
         </article>
 
         <article class="rounded-xl bg-slate-50 p-4 ring-1 ring-slate-200">
@@ -127,6 +142,7 @@ onUpdated(() => {
 &gt;
   {{ item.title }}
 &lt;/li&gt;</code></pre>
+          <p class="mt-2 text-sm text-slate-700">Если у строки не меняются ключевые зависимости, Vue пропускает лишний ререндер.</p>
         </article>
 
         <article class="rounded-xl bg-slate-50 p-4 ring-1 ring-slate-200">
@@ -138,7 +154,7 @@ onUpdated(() => {
     &lt;/template&gt;
   &lt;/VirtualList&gt;
 &lt;/template&gt;</code></pre>
-          <p class="mt-2 text-sm text-slate-700">Вместо 5000 элементов в DOM одновременно — только видимые на экране.</p>
+          <p class="mt-2 text-sm text-slate-700">Вместо тысяч элементов в DOM одновременно отрисовываются только видимые строки.</p>
         </article>
 
         <article class="rounded-xl bg-slate-50 p-4 ring-1 ring-slate-200">
@@ -148,6 +164,7 @@ watch(() => bigForm, () => save(), { deep: true })
 
 // Лучше: watch только нужное поле
 watch(() => bigForm.filters.query, () => saveQuery())</code></pre>
+          <p class="mt-2 text-sm text-slate-700">Точечный watch снижает стоимость пересчетов и делает логику предсказуемой.</p>
         </article>
 
         <article class="rounded-xl bg-slate-50 p-4 ring-1 ring-slate-200">
@@ -157,6 +174,7 @@ watch(() => bigForm.filters.query, () => saveQuery())</code></pre>
 2) Внеси 1 оптимизацию
 3) Снова измерь
 4) Сравни "до/после"</code></pre>
+          <p class="mt-2 text-sm text-slate-700">Оптимизация считается успешной только если есть измеримый прирост после изменений.</p>
         </article>
       </div>
     </section>
