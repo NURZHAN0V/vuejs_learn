@@ -119,46 +119,131 @@
         <article class="rounded-xl bg-slate-50 p-4 ring-1 ring-slate-200">
           <h3 class="mb-2 text-lg font-medium">Шаг 1. Выведи данные через интерполяцию</h3>
           <pre class="overflow-x-auto rounded-lg bg-slate-900 p-3 text-sm text-slate-100"><code class="language-html">&lt;template&gt;
-  &lt;h2&gt;{{ name }}&lt;/h2&gt;
-  &lt;p&gt;{{ role }}&lt;/p&gt;
+  &lt;article class="profile-card"&gt;
+    &lt;h2&gt;{{ name }}&lt;/h2&gt;
+    &lt;p&gt;{{ role }}&lt;/p&gt;
+    &lt;p&gt;Город: {{ city }}&lt;/p&gt;
+  &lt;/article&gt;
 &lt;/template&gt;
 
 &lt;script setup&gt;
 import { ref } from 'vue'
-const name = ref('Анна')
+
+const name = ref('Анна Кузнецова')
 const role = ref('Frontend Developer')
+const city = ref('Казань')
 &lt;/script&gt;</code></pre>
-          <p class="mt-2 text-sm text-slate-700">Это база: сначала просто показываем имя и роль.</p>
+          <p class="mt-2 text-sm text-slate-700">Полноценная основа карточки: сразу видишь имя, роль и город из реактивных данных.</p>
         </article>
 
         <article class="rounded-xl bg-slate-50 p-4 ring-1 ring-slate-200">
           <h3 class="mb-2 text-lg font-medium">Шаг 2. Добавь атрибуты через v-bind</h3>
-          <pre class="overflow-x-auto rounded-lg bg-slate-900 p-3 text-sm text-slate-100"><code class="language-html">&lt;img :src="avatarUrl" :alt="name" class="h-20 w-20 rounded-full" /&gt;
-&lt;a :href="profileLink" target="_blank"&gt;Профиль&lt;/a&gt;</code></pre>
-          <p class="mt-2 text-sm text-slate-700">Теперь src/href берутся из данных, а не забиты вручную в HTML.</p>
+          <pre class="overflow-x-auto rounded-lg bg-slate-900 p-3 text-sm text-slate-100"><code class="language-html">&lt;template&gt;
+  &lt;article class="profile-card"&gt;
+    &lt;img
+      :src="avatarUrl"
+      :alt="`Аватар пользователя ${name}`"
+      class="avatar"
+    /&gt;
+    &lt;h2&gt;{{ name }}&lt;/h2&gt;
+    &lt;p&gt;{{ role }}&lt;/p&gt;
+    &lt;a :href="profileLink" target="_blank" rel="noreferrer"&gt;
+      Открыть GitHub
+    &lt;/a&gt;
+  &lt;/article&gt;
+&lt;/template&gt;
+
+&lt;script setup&gt;
+import { ref } from 'vue'
+
+const name = ref('Анна Кузнецова')
+const role = ref('Frontend Developer')
+const avatarUrl = ref('https://i.pravatar.cc/160?img=32')
+const profileLink = ref('https://github.com')
+&lt;/script&gt;</code></pre>
+          <p class="mt-2 text-sm text-slate-700">Практика как в реальном интерфейсе: avatar и ссылка приходят из данных и могут меняться без правки HTML.</p>
         </article>
 
         <article class="rounded-xl bg-slate-50 p-4 ring-1 ring-slate-200">
           <h3 class="mb-2 text-lg font-medium">Шаг 3. Покажи условный блок</h3>
-          <pre class="overflow-x-auto rounded-lg bg-slate-900 p-3 text-sm text-slate-100"><code class="language-html">&lt;p v-if="isOnline" class="text-emerald-600"&gt;Сейчас в сети&lt;/p&gt;
-&lt;p v-else class="text-slate-500"&gt;Не в сети&lt;/p&gt;</code></pre>
-          <p class="mt-2 text-sm text-slate-700">Если нужно быстро скрывать/показывать без удаления узла, используй <code>v-show</code>.</p>
+          <pre class="overflow-x-auto rounded-lg bg-slate-900 p-3 text-sm text-slate-100"><code class="language-html">&lt;template&gt;
+  &lt;article class="profile-card"&gt;
+    &lt;h2&gt;{{ name }}&lt;/h2&gt;
+    &lt;p&gt;{{ role }}&lt;/p&gt;
+
+    &lt;p v-if="isOnline" class="online"&gt;Сейчас в сети&lt;/p&gt;
+    &lt;p v-else class="offline"&gt;Не в сети&lt;/p&gt;
+
+    &lt;p v-show="showBio"&gt;{{ bio }}&lt;/p&gt;
+  &lt;/article&gt;
+&lt;/template&gt;
+
+&lt;script setup&gt;
+import { ref } from 'vue'
+
+const name = ref('Анна Кузнецова')
+const role = ref('Frontend Developer')
+const bio = ref('Люблю Vue, TypeScript и аккуратный UI.')
+
+const isOnline = ref(true)
+const showBio = ref(true)
+&lt;/script&gt;</code></pre>
+          <p class="mt-2 text-sm text-slate-700"><code>v-if / v-else</code> переключает статус, а <code>v-show</code> удобно для частого показа/скрытия описания.</p>
         </article>
 
         <article class="rounded-xl bg-slate-50 p-4 ring-1 ring-slate-200">
           <h3 class="mb-2 text-lg font-medium">Шаг 4. Добавь список навыков через v-for и key</h3>
-          <pre class="overflow-x-auto rounded-lg bg-slate-900 p-3 text-sm text-slate-100"><code class="language-html">&lt;ul&gt;
-  &lt;li v-for="skill in skills" :key="skill"&gt;
-    {{ skill }}
-  &lt;/li&gt;
-&lt;/ul&gt;</code></pre>
-          <p class="mt-2 text-sm text-slate-700">Без <code>key</code> Vue сложнее корректно обновлять список.</p>
+          <pre class="overflow-x-auto rounded-lg bg-slate-900 p-3 text-sm text-slate-100"><code class="language-html">&lt;template&gt;
+  &lt;article class="profile-card"&gt;
+    &lt;h2&gt;{{ name }}&lt;/h2&gt;
+    &lt;p&gt;{{ role }}&lt;/p&gt;
+
+    &lt;h3&gt;Навыки&lt;/h3&gt;
+    &lt;ul&gt;
+      &lt;li v-for="skill in skills" :key="skill.id"&gt;
+        {{ skill.title }} ({{ skill.level }})
+      &lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/article&gt;
+&lt;/template&gt;
+
+&lt;script setup&gt;
+import { ref } from 'vue'
+
+const name = ref('Анна Кузнецова')
+const role = ref('Frontend Developer')
+const skills = ref([
+  { id: 1, title: 'Vue 3', level: 'advanced' },
+  { id: 2, title: 'Pinia', level: 'middle' },
+  { id: 3, title: 'TypeScript', level: 'middle' }
+])
+&lt;/script&gt;</code></pre>
+          <p class="mt-2 text-sm text-slate-700">Используй стабильный <code>key</code> (например, <code>skill.id</code>), чтобы Vue корректно обновлял список при изменениях.</p>
         </article>
 
         <article class="rounded-xl bg-slate-50 p-4 ring-1 ring-slate-200">
           <h3 class="mb-2 text-lg font-medium">Шаг 5. v-once и v-html на практике</h3>
-          <pre class="overflow-x-auto rounded-lg bg-slate-900 p-3 text-sm text-slate-100"><code class="language-html">&lt;p v-once&gt;Эта строка не будет обновляться после первого рендера&lt;/p&gt;
-&lt;div v-html="safeHtml"&gt;&lt;/div&gt;</code></pre>
+          <pre class="overflow-x-auto rounded-lg bg-slate-900 p-3 text-sm text-slate-100"><code class="language-html">&lt;template&gt;
+  &lt;article class="profile-card"&gt;
+    &lt;h2&gt;{{ name }}&lt;/h2&gt;
+    &lt;p v-once&gt;ID профиля: {{ profileId }}&lt;/p&gt;
+    &lt;p&gt;Сейчас просмотров: {{ views }}&lt;/p&gt;
+
+    &lt;section&gt;
+      &lt;h3&gt;О пользователе&lt;/h3&gt;
+      &lt;div v-html="safeHtml"&gt;&lt;/div&gt;
+    &lt;/section&gt;
+  &lt;/article&gt;
+&lt;/template&gt;
+
+&lt;script setup&gt;
+import { ref } from 'vue'
+
+const name = ref('Анна Кузнецова')
+const profileId = ref('dev-1024') // Отрисуется один раз и не обновится
+const views = ref(15)
+const safeHtml = ref('&lt;p&gt;&lt;strong&gt;Stack:&lt;/strong&gt; Vue, TS, Nuxt&lt;/p&gt;')
+&lt;/script&gt;</code></pre>
           <p class="mt-2 text-sm text-slate-700">
             <code>v-html</code> применяй только для доверенных данных, иначе можно получить XSS-уязвимость.
           </p>
